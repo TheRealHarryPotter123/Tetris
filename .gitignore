@@ -1,0 +1,3 @@
+# On ignore les fichiers de build et les librairies externes
+build/
+external/
