@@ -18,13 +18,29 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL)
 
+FetchContent_Declare(
+    ImGui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG "v1.92.6"
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/ImGui
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(ImGui)
+
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "src/*.cpp" "src/*.h")
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 
-# Link to the actual SDL3 library.
+# Include directories
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/ImGui
+    ${CMAKE_SOURCE_DIR}/external/ImGui/backends
+)
+
+# Link the SDL3 library.
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SRC_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
