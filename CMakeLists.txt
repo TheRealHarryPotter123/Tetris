@@ -18,9 +18,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL)
 
-file(GLOB_RECURSE SRC_FILES "src/*.cpp" "src/*.h")
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "src/*.cpp" "src/*.h")
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
+
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 
 # Link to the actual SDL3 library.
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)

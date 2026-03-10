@@ -1,10 +1,13 @@
 #include <iostream>
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "Util.h"
-#include "Tetromino.h"
-#include "Grid.h"
+#include "Public/Ressource/Grid.h"
+#include "Public/Ressource/Tetromino.h"
+#include "Public/Ressource/StaticBlock.h"
+
+#include "Public/Ressource/Util.h"
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
