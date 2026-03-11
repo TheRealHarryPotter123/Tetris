@@ -1,6 +1,7 @@
 /* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
 *    Modified by
-*        Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
+*       Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
+*		Maxime Sevigny, 11/03/2026: Added DrawDebug()
 */
 #pragma once
 
@@ -30,5 +31,9 @@ public:
 	void addBlock(size_t, size_t, StaticBlock);
 	void draw(SDL_Renderer* renderer);
 	SDL_FPoint getCoord(size_t, size_t) const;
+
+#if IS_USING_IMGUI
+	void DrawDebug();
+#endif
 
 };

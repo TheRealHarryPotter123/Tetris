@@ -1,6 +1,7 @@
 /* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
 *    Modified by
-*      Thomas Lesieur : 11/03/2026 : ajout de l'affichage de la grille
+*    	Thomas Lesieur : 11/03/2026 : ajout de l'affichage de la grille
+*		Maxime Sevigny, 11/03/2026: Added DrawDebug()
 */
 #pragma once
 
@@ -59,3 +60,13 @@ Grid::Rectangle& Grid::Rectangle::operator=(const Rectangle& other)
 void Grid::Rectangle::draw(SDL_Renderer* renderer) {
 	SDL_RenderGeometry(renderer, NULL, points, 4, indices, 6);
 }
+
+#if IS_USING_IMGUI
+void Grid::DrawDebug()
+{
+	ImGui::Begin("Grid");
+	ImGui::Text("This is the debug window for the play grid");
+
+	ImGui::End();
+}
+#endif // IS_USING_IMGUI
