@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -9,6 +9,9 @@
 
 #include "Public/Ressource/Util.h"
 
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 840
+
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 
@@ -18,19 +21,18 @@ int main(int argc, char* argv[])
 		return SDL_APP_FAILURE;
 	}
 
-	if (!SDL_CreateWindowAndRenderer("Tetris", 1280, 840, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
-		std::cerr << "pas capable de générer la fenêtre ou le gpu";
+	if (!SDL_CreateWindowAndRenderer("Tetris", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+		std::cerr << "pas capable de generer la fenï¿½tre ou le gpu";
 		return SDL_APP_FAILURE;
 	}
 
-	SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+	SDL_SetRenderLogicalPresentation(renderer, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
 	SDL_FColor color = { 1.0, 0.0, 0.0, 1.0 };
 
 	//Tetromino I = { TetrominoType::I, 200, 200 };
 	//Tetromino J = { TetrominoType::J, 350, 200 };
-	Grid grid{ window, renderer };
-	
+	Grid grid{ renderer };
 
 	bool running = true;
 	SDL_Event event;
@@ -39,6 +41,13 @@ int main(int argc, char* argv[])
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
 				running = false;
+			}
+			else if (event.type == SDL_EVENT_WINDOW_RESIZED) {
+				int width, height;
+				SDL_GetWindowSize(window, &width, &height);
+				SDL_SetRenderLogicalPresentation(renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+				//TODO : AJOUTER LES AJUSTEMENTS POUR QUE L'ON AFFICHE LES ï¿½Lï¿½MENTS SELON LA NOUVELLE TAILLE
+				//i.e. recharger les objets avec les nouvelles tailles
 			}
 		}
 

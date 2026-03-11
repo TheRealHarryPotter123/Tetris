@@ -1,17 +1,25 @@
 #pragma once
 
 #include "Util.h"
+#include <iostream>
 
-#define NB_CASES_HORIZONTALES 10
-#define NB_CASES_VERTICALES 20
 
 class Grid {
 private:
+	class Rectangle {
+	private:
+		SDL_Vertex points[4];
+		const int indices[6]{ 0, 1, 2, 2, 3, 0 };
+	public:
+		Rectangle(float = 0, float = 0, float = 0, float = 0);
+		Rectangle& operator=(const Rectangle&);
+		void draw(SDL_Renderer*);
+	};
 	float x, y, w, h;
-	SDL_FRect rects[NB_CASES_HORIZONTALES][NB_CASES_VERTICALES];
-	SDL_FRect rect;
+	Rectangle rectsHorizontaux[21];
+	Rectangle rectsVerticaux[11];
 public:
-	Grid(SDL_Window* window, SDL_Renderer* renderer);
+	Grid(SDL_Renderer* renderer);
 	
 	void draw(SDL_Renderer* renderer);
 
