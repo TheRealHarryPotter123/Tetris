@@ -1,21 +1,23 @@
 #pragma once
 
-#include <iostream>
 #include "../../Public/Ressource/Grid.h"
+#include <iostream>
 
 
-Grid::Grid(SDL_Renderer* renderer) {
-	int width, height;
-	SDL_GetRenderOutputSize(renderer, &width, &height);
-	float widthf = static_cast<float>(width);
-	float heightf = static_cast<float>(height);
+Grid::Grid(float x, float y, float blockSize) :
+	blockSize{ blockSize }, x{x}, y{y},
+	blocks{}, activeBlocks { false }
+{
+	for (size_t i = 1; i != sizeof rectsHorizontaux / sizeof rectsHorizontaux[0]; ++i)
+		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 2, 10 * blockSize, 2};
+	for (size_t i = 1; i != sizeof rectsVerticaux / sizeof rectsVerticaux[0]; ++i)
+		rectsVerticaux[i] = Rectangle{ x + blockSize * i - 2, y, 2, 20 * blockSize};
+}
 
-	std::cout << widthf << " " << heightf << std::endl;
-	for (size_t i = 0; i != sizeof rectsHorizontaux / sizeof rectsHorizontaux[0]; ++i)
-		rectsHorizontaux[i] = Rectangle{ widthf / 4, heightf / 22 * i + 20.0f, 10 * heightf / 22, 2};
-	for (size_t i = 0; i != sizeof rectsVerticaux / sizeof rectsVerticaux[0]; ++i)
-		rectsVerticaux[i] = Rectangle{ width / 4 + heightf / 22 * i, 20.0f, 2, 20 * heightf / 22};
-	
+void Grid::addBlock(size_t x, size_t y, StaticBlock block)
+{
+	blocks[x][y] = block;
+	activeBlocks[x][y] = true;
 }
 	
 void Grid::draw(SDL_Renderer* renderer) {
@@ -23,6 +25,17 @@ void Grid::draw(SDL_Renderer* renderer) {
 		rectsHorizontaux[i].draw(renderer);
 	for (size_t i = 0; i != sizeof rectsVerticaux / sizeof rectsVerticaux[0]; ++i)
 		rectsVerticaux[i].draw(renderer);
+	for (size_t i = 0; i != sizeof blocks / sizeof blocks[0]; ++i) {
+		for (size_t j = 0; j != sizeof blocks[0] / sizeof blocks[0][0]; ++j) {
+			if (activeBlocks[i][j])
+				blocks[i][j].drawBlock(renderer);
+		}
+	}
+}
+
+SDL_FPoint Grid::getCoord(size_t i, size_t j) const
+{
+	return SDL_FPoint{ x + blockSize * j, y + blockSize * i };
 }
 
 Grid::Rectangle::Rectangle(float x, float y, float w,  float h)

@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (!SDL_CreateWindowAndRenderer("Tetris", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
-		std::cerr << "pas capable de generer la fen�tre ou le gpu";
+		std::cerr << "pas capable de generer la fenetre ou le gpu";
 		return SDL_APP_FAILURE;
 	}
 
@@ -32,7 +32,20 @@ int main(int argc, char* argv[])
 
 	//Tetromino I = { TetrominoType::I, 200, 200 };
 	//Tetromino J = { TetrominoType::J, 350, 200 };
-	Grid grid{ renderer };
+
+	//Creation de la grille à partir de la taille de l'écran
+	constexpr float blockSize = WINDOW_HEIGHT / 22;
+	constexpr float x = WINDOW_WIDTH / 4;
+	constexpr float y = 20.0f;
+	Grid grid{ x, y, blockSize };
+
+	//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
+	for(size_t i = 0; i != 20; ++i) {
+		for (size_t j = 0; j != 10; ++j) {
+			StaticBlock block{ grid.getCoord(i, j), blockSize, SDL_FColor{ 0.05f * i, 0.1f * j, 0.5f, 1.0 } };
+			grid.addBlock(i, j, block);
+		}
+	}
 
 	bool running = true;
 	SDL_Event event;
@@ -46,7 +59,7 @@ int main(int argc, char* argv[])
 				int width, height;
 				SDL_GetWindowSize(window, &width, &height);
 				SDL_SetRenderLogicalPresentation(renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-				//TODO : AJOUTER LES AJUSTEMENTS POUR QUE L'ON AFFICHE LES �L�MENTS SELON LA NOUVELLE TAILLE
+				//TODO : AJOUTER LES AJUSTEMENTS POUR QUE L'ON AFFICHE LES ELEMENTS SELON LA NOUVELLE TAILLE
 				//i.e. recharger les objets avec les nouvelles tailles
 			}
 		}

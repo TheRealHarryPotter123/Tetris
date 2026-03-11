@@ -1,13 +1,20 @@
 
 #include "../../Public/Ressource/StaticBlock.h"
 
-StaticBlock::StaticBlock(float x, float y, SDL_FColor color)
+StaticBlock::StaticBlock(float x, float y, float blockSize, SDL_FColor color)
 	: coord{ x, y }, color(color)
 {
-	const SDL_FPoint points[]{ {-30, -30}, {-30, 30},
-								   {-20, -20}, {-20, 20},
-								   {20, -20},  {20, 20},
-								   {30, -30},  {30, 30} };
+	const float factor = 1.0f / 6.0f;
+	const SDL_FPoint points[]{
+		{ 0, 0 },
+		{ 0, blockSize },
+		{factor * blockSize, factor * blockSize},
+		{factor * blockSize, 5 * factor * blockSize},
+		{5 * factor * blockSize, factor * blockSize},
+		{5 * factor * blockSize, 5 * factor * blockSize},
+		{blockSize, 0},
+		{blockSize, blockSize}
+	};
 
 	CenterBlock[0].position = coord + points[2];
 	CenterBlock[1].position = coord + points[3];
@@ -46,8 +53,8 @@ StaticBlock::StaticBlock(float x, float y, SDL_FColor color)
 
 }
 
-StaticBlock::StaticBlock(SDL_FPoint coord, SDL_FColor color) 
-	: StaticBlock(coord.x, coord.y, color)
+StaticBlock::StaticBlock(SDL_FPoint coord, float blockSize, SDL_FColor color) 
+	: StaticBlock(coord.x, coord.y, blockSize, color)
 {}
 
 StaticBlock::StaticBlock() 
@@ -56,20 +63,19 @@ StaticBlock::StaticBlock()
 	, bottomBorder{ 0 }, CenterBlock{ 0 }
 {}
 
-StaticBlock StaticBlock::operator=(const StaticBlock& other) const
+StaticBlock& StaticBlock::operator=(const StaticBlock& other)
 {
-	StaticBlock block;
-	block.coord = other.coord;
-	block.color = other.color;
+	coord = other.coord;
+	color = other.color;
 	for (size_t i = 0; i < 4; i++)
 	{
-		block.CenterBlock[i] = other.CenterBlock[i];
-		block.topBorder[i] = other.topBorder[i];
-		block.bottomBorder[i] = other.bottomBorder[i];
-		block.LBorder[i] = other.LBorder[i];
-		block.RBorder[i] = other.RBorder[i];
+		CenterBlock[i] = other.CenterBlock[i];
+		topBorder[i] = other.topBorder[i];
+		bottomBorder[i] = other.bottomBorder[i];
+		LBorder[i] = other.LBorder[i];
+		RBorder[i] = other.RBorder[i];
 	}
-	return block;
+	return *this;
 }
 
 void StaticBlock::drawBlock(SDL_Renderer* renderer)
