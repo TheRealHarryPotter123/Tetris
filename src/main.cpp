@@ -4,8 +4,10 @@
 *		Thomas Lesieur : 09/03/2026 : Restructuration de l'affichage en different fichiers
 *		Maxime Sevigny : 10/03/2026 : Structuration des fichiers en .h et .cpp
 *		Thomas Lesieur : 11/03/2026 : Ajout de la grille et de blocs statiques a l'interieur
+*		Maxime Sevigny : 11/03/2026 : Bug fix - merge problem + clean fct main + creer test de remplissage de la grille
 */
 
+#include "Public/Ressource/Util.h"
 #include <iostream>
 #include <chrono>
 
@@ -46,32 +48,26 @@ int main(int argc, char* argv[])
 
 	SDL_SetRenderLogicalPresentation(renderer, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-	SDL_FColor color = { 1.0, 0.0, 0.0, 1.0 };
-
-	//Tetromino I = { TetrominoType::I, 200, 200 };
-	//Tetromino J = { TetrominoType::J, 350, 200 };
-
 	//Creation de la grille à partir de la taille de l'écran
 	constexpr float blockSize = WINDOW_HEIGHT / 22;
 	constexpr float x = WINDOW_WIDTH / 4;
 	constexpr float y = 20.0f;
 	Grid grid{ x, y, blockSize };
 
-	//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
-	for(size_t i = 0; i != 20; ++i) {
-		for (size_t j = 0; j != 10; ++j) {
-			StaticBlock block{ grid.getCoord(i, j), blockSize, SDL_FColor{ 0.05f * i, 0.1f * j, 0.5f, 1.0 } };
-			grid.addBlock(i, j, block);
-		}
-	}
-	//Init grid
-
 #if IS_TESTING
 	//Test enabled
 
 	if constexpr (TYPE_OF_TEST == 0)
 	{
-		//Fill the grid with random blocks
+		//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
+		for (size_t i = 0; i != 20; ++i)
+		{
+			for (size_t j = 0; j != 10; ++j)
+			{
+				StaticBlock block{ grid.getCoord(i, j), blockSize, SDL_FColor{ 0.05f * i, 0.1f * j, 0.5f, 1.0 } };
+				grid.addBlock(i, j, block);
+			}
+		}
 	}
 	else
 	{
