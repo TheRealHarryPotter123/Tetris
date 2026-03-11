@@ -65,7 +65,6 @@ int main(int argc, char* argv[])
 		}
 	}
 	//Init grid
-	Grid grid{ window, renderer };
 
 #if IS_TESTING
 	//Test enabled
