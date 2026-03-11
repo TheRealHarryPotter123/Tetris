@@ -1,3 +1,9 @@
+/* Created by Thomas Lesieur
+	Modified by
+		MS, 11/03/2026: Added DrawDebug()
+
+*/
+
 #pragma once
 
 #include "Util.h"
@@ -14,5 +20,9 @@ public:
 	Grid(SDL_Window* window, SDL_Renderer* renderer);
 	
 	void draw(SDL_Renderer* renderer);
+
+#if IS_USING_IMGUI
+	void DrawDebug();
+#endif
 
 };

@@ -1,4 +1,8 @@
-#pragma once
+/* Created by Thomas Lesieur
+	Modified by
+		MS, 11/03/2026: Added DrawDebug()
+
+*/
 
 #include <iostream>
 #include "../../Public/Ressource/Grid.h"
@@ -36,3 +40,13 @@ void Grid::draw(SDL_Renderer* renderer) {
 	SDL_RenderRect(renderer, &rects[0][0]);
 	SDL_RenderRect(renderer, &rect);
 }
+
+#if IS_USING_IMGUI
+void Grid::DrawDebug()
+{
+	ImGui::Begin("Grid");
+	ImGui::Text("This is the debug window for the play grid");
+
+	ImGui::End();
+}
+#endif // IS_USING_IMGUI

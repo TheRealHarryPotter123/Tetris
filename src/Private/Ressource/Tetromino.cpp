@@ -1,4 +1,3 @@
-#pragma once
 
 #include "../../Public/Ressource/Tetromino.h"
 #include <SDL3/SDL_render.h>

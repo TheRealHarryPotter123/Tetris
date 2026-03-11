@@ -1,4 +1,10 @@
-#define IS_USING_IMGUI true			//Allows to turn off all ImGui, since it will not be used in the final version
+/* Created by Thomas Lesieur
+	Modifiev by
+		MS, 11/03/2026: Added Imgui and all setup required to show windows
+
+*/
+
+#include "Public/Ressource/Util.h"
 
 #include <iostream>
 #include <chrono>
@@ -11,33 +17,17 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 #include <stdio.h>
-#endif
+#endif //IS_USING_IMGUI
 
 #include "Public/Ressource/Grid.h"
 #include "Public/Ressource/Tetromino.h"
 #include "Public/Ressource/StaticBlock.h"
-#include "Public/Ressource/Util.h"
-
-#define IS_TESTING false
-#define TYPE_OF_TEST 0
+#include "Public/Ressource/DisplayUtil.h"
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 
 constexpr SDL_FColor clear_color = SDL_FColor(1.0,1.0,1.0,1.0);
-
-void DisplayOverlay(float elapsedMillisec, float elapsed_second)
-{
-#if IS_USING_IMGUI
-	static float f = 0.0f;
-	static int counter = 0;
-
-	ImGui::Begin("Performance tab");
-
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", elapsedMillisec, 1.0 / elapsed_second);
-	ImGui::End();
-#endif
-}
 
 
 int main(int argc, char* argv[])
@@ -69,35 +59,17 @@ int main(int argc, char* argv[])
 #endif // IS_TESTING
 
 #if IS_USING_IMGUI
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup scaling
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.ScaleAllSizes(SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay()));        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-	style.FontScaleDpi = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
-	ImGui_ImplSDLRenderer3_Init(renderer);
+	SetupImGuiContext(window, renderer);
 #endif
 
 	bool running = true;
 	SDL_Event event;
 
 	std::chrono::time_point<std::chrono::high_resolution_clock> pre_time, post_time;
-	pre_time = std::chrono::high_resolution_clock::now();
 
 	while (running) {
-		// Calcul de performance
+		// Calculate time since last frame (for calculations and performance)
+		pre_time = post_time;
 		post_time = std::chrono::high_resolution_clock::now();
 		auto elapsed_Time = post_time - pre_time;
 		auto elapsed_milli = (float)std::chrono::duration<double, std::milli>(elapsed_Time).count();
@@ -105,48 +77,48 @@ int main(int argc, char* argv[])
 
 		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 
-		pre_time = post_time;
 
 		while (SDL_PollEvent(&event)) {
 #if IS_USING_IMGUI
-			//Send event to ImGui, so it can handle mouse clicks et keyboard input
-			ImGui_ImplSDL3_ProcessEvent(&event);
+			ImGui_ImplSDL3_ProcessEvent(&event);	//Send event to ImGui, so it can handle mouse clicks et keyboard input
 #endif //IS_USING_IMGUI
+
 			if (event.type == SDL_EVENT_QUIT) {
 				running = false;
 			}
 		}
-
-
-#if IS_USING_IMGUI
-		// Start the Dear ImGui frame
-		ImGui_ImplSDLRenderer3_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
-		ImGui::NewFrame();
 		
-		DisplayOverlay(elapsed_milli, elapsed_second);
 
-		//Render
-		ImGui::Render();
-#endif //IS_USING_IMGUI
-
+		//Clear previous render
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 		SDL_RenderClear(renderer);
 
 #if IS_USING_IMGUI
-		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+		SetupImGuiFrame();
+		DisplayOverlay(elapsed_milli,elapsed_second);
+
 #endif //IS_USING_IMGUI
+
+	/* MAIN LOOP - START */
 
 
 		//Draw grid and blocks
 		grid.draw(renderer);
+
 		
+	/* MAIN LOOP - END */
+
+#if IS_USING_IMGUI
+		//Render ImGui windows
+		ImGui::Render();
+		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+#endif //IS_USING_IMGUI
+
 		SDL_RenderPresent(renderer);
 	}
+
 #if IS_USING_IMGUI
-	ImGui_ImplSDLRenderer3_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
-	ImGui::DestroyContext();
+	StopImGui();
 #endif //IS_USING_IMGUI
 
 	SDL_DestroyRenderer(renderer);
