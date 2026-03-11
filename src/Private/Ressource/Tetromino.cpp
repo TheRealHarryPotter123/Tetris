@@ -1,3 +1,6 @@
+/* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*/
+
 #pragma once
 
 #include "../../Public/Ressource/Tetromino.h"

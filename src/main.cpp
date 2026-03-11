@@ -1,4 +1,12 @@
-﻿#include <iostream>
+﻿/* Created by Thomas Lesieur, 03/02/2026: Configuration intiale du projet
+*	Modified by
+*		Thomas Lesieur : 23/02/2026 : Premier affichage d'un bloc et d'un tetromino
+*		Thomas Lesieur : 09/03/2026 : Restructuration de l'affichage en different fichiers
+*		Maxime Sevigny : 10/03/2026 : Structuration des fichiers en .h et .cpp
+*		Thomas Lesieur : 11/03/2026 : Ajout de la grille et de blocs statiques a l'interieur
+*/
+
+#include <iostream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>

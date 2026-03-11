@@ -1,4 +1,7 @@
-#pragma once
+/* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*    Modified by
+*        Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
+*/
 #pragma once
 
 #include "Util.h"

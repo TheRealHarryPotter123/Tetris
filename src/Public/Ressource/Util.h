@@ -1,3 +1,9 @@
+/* Created by Thomas Lesieur, 09/03/2026 : Restructuration de l'affichage en different fichiers
+*    Modified by
+*        Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*        Thomas Lesieur, 10/03/2026 : Ajout de la grille
+*/
+
 #pragma once
 
 #include <SDL3/SDL.h>

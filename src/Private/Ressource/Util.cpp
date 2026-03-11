@@ -1,4 +1,7 @@
-
+/* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*    Modified by
+*        Thomas Lesieur : 10/03/2026 : Ajout de la grille
+*/
 #include "../../Public/Ressource/Util.h"
 
 SDL_FPoint operator+(SDL_FPoint p1, SDL_FPoint p2)

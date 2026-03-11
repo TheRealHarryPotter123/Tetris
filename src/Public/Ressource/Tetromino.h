@@ -1,3 +1,8 @@
+/* Created by Thomas Lesieur, 09/03/2026 : Restructuration de l'affichage en different fichiers
+*	Modified by
+*		Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*/
+
 #pragma once
 
 #include "Util.h"
