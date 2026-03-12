@@ -26,6 +26,11 @@ Grid::Grid(float x, float y, float blockSize) :
 
 void Grid::Update(float deltaTime)
 {
+#if IS_USING_IMGUI
+	if (!ShouldTetrominoFall)
+		return; //do nothing
+#endif
+
 	if (!tetromino.IsValid())
 	{
 		AddTetromino();
@@ -128,6 +133,8 @@ void Grid::DrawDebug()
 	ImGui::Text("This is the debug window for the play grid");
 
 	ImGui::Text("Time until next fall: %f / %f", timeToNextFall, timeBetweenFalls);
+
+	ImGui::Checkbox("Should tetromino fall?", &ShouldTetrominoFall);
 
 	ImGui::SliderFloat("Time between block update", &timeBetweenFalls, 0.01f, 5.0f);
 

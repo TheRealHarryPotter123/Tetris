@@ -42,6 +42,11 @@ private:
 	};
 	inline bool IsCellOccupied(CellCoord coord) { return activeBlocks[coord.x][coord.y]; };
 
+
+#if IS_USING_IMGUI
+	bool ShouldTetrominoFall = false;
+#endif
+
 public:
 	Grid(float = 0, float = 0, float = 0);
 	
