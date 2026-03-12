@@ -13,10 +13,10 @@ Grid::Grid(float x, float y, float blockSize) :
 	blockSize{ blockSize }, x{x}, y{y},
 	blocks{}, activeBlocks { false }
 {
-	for (size_t i = 1; i != sizeof rectsHorizontaux / sizeof rectsHorizontaux[0]; ++i)
-		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 2, 10 * blockSize, 2};
-	for (size_t i = 1; i != sizeof rectsVerticaux / sizeof rectsVerticaux[0]; ++i)
-		rectsVerticaux[i] = Rectangle{ x + blockSize * i - 2, y, 2, 20 * blockSize};
+	for (size_t i = 0; i != sizeof rectsHorizontaux / sizeof rectsHorizontaux[0]; ++i)
+		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 1, 10 * blockSize, 2};
+	for (size_t i = 0; i != sizeof rectsVerticaux / sizeof rectsVerticaux[0]; ++i)
+		rectsVerticaux[i] = Rectangle{ x + blockSize * i - 1, y, 2, 20 * blockSize};
 }
 
 void Grid::addBlock(size_t x, size_t y, StaticBlock block)
