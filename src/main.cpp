@@ -10,6 +10,7 @@
 #include "Public/Ressource/Util.h"
 #include <iostream>
 #include <chrono>
+#include <fstream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -76,13 +77,21 @@ int main(int argc, char* argv[])
 
 #endif // IS_TESTING
 
+	std::ofstream frameFile;
 #if IS_USING_IMGUI
 	SetupImGuiContext(window, renderer);
+	frameFile.open("../src/log/frames.txt");
 #endif
 
 	bool running = true;
 	SDL_Event event;
+	
+	//gestion de l'écriture du nombre de frames dans un fichier texte
+	auto start_time = std::chrono::high_resolution_clock::now();
+	unsigned long long frameCount = 0;
+	int secondCount = 1;
 
+	//affichage ImGui du nombre de frames par secondes
 	std::chrono::time_point<std::chrono::high_resolution_clock> pre_time, post_time;
 
 	while (running) {
@@ -95,6 +104,15 @@ int main(int argc, char* argv[])
 
 		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 
+		if (frameFile.is_open()) {
+			++frameCount;
+			auto elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
+			if (elapsed_time >= std::chrono::seconds(secondCount)) {
+				frameFile << secondCount << " seconds elapsed : " << frameCount << "fps" << std::endl;
+				++secondCount;
+				frameCount = 0;
+			}
+		}
 
 		while (SDL_PollEvent(&event)) {
 #if IS_USING_IMGUI
