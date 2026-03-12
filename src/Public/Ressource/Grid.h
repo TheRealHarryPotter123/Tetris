@@ -2,6 +2,7 @@
 *    Modified by
 *       Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
 *		Maxime Sevigny, 11/03/2026: Added DrawDebug()
+*		Maxime Sevigny, 12/03/2026: Added Update() to handle the changes to the grid each frame + some support function to read the grid
 */
 #pragma once
 
@@ -31,7 +32,7 @@ private:
 
 	Tetromino tetromino{};
 	
-	float timeBetweenFalls = 0.78;
+	float timeBetweenFalls = 0.75;
 	float timeToNextFall = timeBetweenFalls;
 
 	inline bool IsCellValid(CellCoord coord) 
