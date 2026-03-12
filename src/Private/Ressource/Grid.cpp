@@ -21,7 +21,7 @@ Grid::Grid(float x, float y, float blockSize) :
 
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i)
 		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j)
-			blocks[i][j] = StaticBlock(getCoord(i, j), blockSize, SDL_FColor());
+			blocks[i][j] = StaticBlock(getCoord(i, j), blockSize, SDL_FColor(1.0,0.4,0.7,1.0));
 }
 
 void Grid::Update(float deltaTime)
