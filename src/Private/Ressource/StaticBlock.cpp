@@ -6,7 +6,7 @@
 #include "../../Public/Ressource/StaticBlock.h"
 
 StaticBlock::StaticBlock(float x, float y, float blockSize, SDL_FColor color)
-	: coord{ x, y }, color(color)
+	: coord{ x, y }, color{ color }
 {
 	const float factor = 1.0f / 6.0f;
 	const SDL_FPoint points[]{
@@ -54,7 +54,6 @@ StaticBlock::StaticBlock(float x, float y, float blockSize, SDL_FColor color)
 	RBorder[3].position = coord + points[7];
 	for (size_t i = 0; i != sizeof RBorder / sizeof RBorder[0]; ++i)
 		RBorder[i].color = color * 0.75;
-
 }
 
 StaticBlock::StaticBlock(SDL_FPoint coord, float blockSize, SDL_FColor color) 
@@ -71,6 +70,7 @@ StaticBlock& StaticBlock::operator=(const StaticBlock& other)
 {
 	coord = other.coord;
 	color = other.color;
+
 	for (size_t i = 0; i < 4; i++)
 	{
 		CenterBlock[i] = other.CenterBlock[i];

@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 	constexpr float blockSize = WINDOW_HEIGHT / 22;
 	constexpr float x = WINDOW_WIDTH / 4;
 	constexpr float y = 20.0f;
+	
 	Grid grid{ x, y, blockSize };
 
 	//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
@@ -83,6 +84,7 @@ int main(int argc, char* argv[])
 		std::cout << "IS_TESTING is true but no test specified";
 	}
 
+	
 #endif // IS_TESTING
 
 	std::ofstream frameFile;
@@ -152,6 +154,8 @@ int main(int argc, char* argv[])
 
 	/* MAIN LOOP - START */
 
+		//update grid
+		grid.Update(elapsed_second);
 
 		//Draw grid and blocks
 		grid.draw(renderer);
@@ -160,6 +164,7 @@ int main(int argc, char* argv[])
 	/* MAIN LOOP - END */
 
 #if IS_USING_IMGUI
+		grid.DrawDebug();
 		//Render ImGui windows
 		ImGui::Render();
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);

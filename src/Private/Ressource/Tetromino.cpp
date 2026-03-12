@@ -2,37 +2,85 @@
 */
 
 #include "../../Public/Ressource/Tetromino.h"
-#include <SDL3/SDL_render.h>
 
-Tetromino::Tetromino(TetrominoType type, float x, float y)
-		: coord{ x, y }
+Tetromino::Tetromino(TetrominoType type, CellCoord center)
+	: type { type}
 {
-	//SDL_FColor color;
+
+	cells[0] = center;
+
 	switch (type) {
 		using enum TetrominoType;
 		case I:
 		{
-			//color = { 0.0, 0.7, 0.9, 1.0 };
-			/*blocks[0] = new StaticBlock{ coord, color };
-			blocks[1] = new StaticBlock{ coord + SDL_FPoint{0, 60}, color };
-			blocks[2] = new StaticBlock{ coord + SDL_FPoint{0, 120}, color };
-			blocks[3] = new StaticBlock{ coord + SDL_FPoint{0, 180}, color };*/
+			cells[1] = CellCoord{ center.x, center.y + 1 };
+			cells[2] = CellCoord{ center.x, center.y + 2 };
+			cells[3] = CellCoord{ center.x, center.y + 3 };
 			break;
 		}
 		case J:
 		{
-			//color = { 0.1, 0.1, 0.7, 1.0 };
-			/*blocks[0] = new StaticBlock{ coord, color };
-			blocks[1] = new StaticBlock{ coord + SDL_FPoint{0, 60}, color };
-			blocks[2] = new StaticBlock{ coord + SDL_FPoint{0, 120}, color };
-			blocks[3] = new StaticBlock{ coord + SDL_FPoint{-60, 120}, color };*/
+			cells[1] = CellCoord{ center.x, center.y + 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y };
+			cells[3] = CellCoord{ center.x + 1, center.y};
+			break;
 		}
+		case O:
+		{
+			cells[1] = CellCoord{center.x + 1, center.y + 0 };
+			cells[2] = CellCoord{center.x, center.y + 1 };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
+			break;
+		}
+		case L: 
+		{
+			cells[1] = CellCoord{ center.x - 1, center.y};
+			cells[2] = CellCoord{ center.x + 1, center.y };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
+			break;
+		}
+		case S: 
+		{
+			cells[1] = CellCoord{ center.x - 1, center.y};
+			cells[2] = CellCoord{ center.x, center.y + 1 };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
+			break;
+		}
+		case T: 
+		{
+			cells[1] = CellCoord{ center.x + 1, center.y + 0 };
+			cells[2] = CellCoord{ center.x, center.y + 1 };
+			cells[3] = CellCoord{ center.x - 1, center.y};
+			break;
+		}
+		case Z: 
+		{
+			cells[1] = CellCoord{ center.x - 1, center.y + +1 };
+			cells[2] = CellCoord{ center.x, center.y + 1 };
+			cells[3] = CellCoord{ center.x + 1, center.y};
+			break;
+		}
+		
 	}
 }
 
-void Tetromino::draw(SDL_Renderer* renderer) {
-	/*blocks[0]->drawBlock(renderer);
-	blocks[1]->drawBlock(renderer);
-	blocks[2]->drawBlock(renderer);
-	blocks[3]->drawBlock(renderer);*/
+bool Tetromino::Rotate(TypeOfTurn turn)
+{
+	//Needs definition
+	return false;
+}
+
+bool Tetromino::Fall(int nbrCells)
+{
+	//First check if fall is possible
+	std::vector<CellCoord> newCells = GetCells();
+
+	for (size_t i = 0; i < NBR_CELLS_PER_TETROMINO; i++)
+	{
+		if (!newCells[i].Move(nbrCells, 0))
+			return false;
+	}
+
+	cells = std::move(newCells);
+	return true;
 }
