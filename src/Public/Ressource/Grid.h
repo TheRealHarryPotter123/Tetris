@@ -41,7 +41,6 @@ private:
 			&& 0 <= coord.y && coord.y < NBR_CELL_VERTICAL;
 	};
 	inline bool IsCellOccupied(CellCoord coord) { return activeBlocks[coord.x][coord.y]; };
-	inline void ActivateBlock(CellCoord coord, bool shouldActivate) { activeBlocks[coord.x][coord.y] = shouldActivate; };
 
 public:
 	Grid(float = 0, float = 0, float = 0);
@@ -49,6 +48,7 @@ public:
 	void Update(float deltaTime);
 	
 	void AddTetromino();
+	inline void ActivateBlock(CellCoord coord, bool shouldActivate) { activeBlocks[coord.x][coord.y] = shouldActivate; };
 
 	void draw(SDL_Renderer* renderer);
 	SDL_FPoint getCoord(size_t, size_t) const;

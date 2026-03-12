@@ -56,14 +56,6 @@ int main(int argc, char* argv[])
 	
 	Grid grid{ x, y, blockSize };
 
-	//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
-	for(size_t i = 0; i != 20; ++i) {
-		for (size_t j = 0; j != 10; ++j) {
-			StaticBlock block{ grid.getCoord(i, j), blockSize, SDL_FColor{ 0.05f * i, 0.1f * j, 0.5f, 1.0 } };
-			grid.addBlock(i, j, block);
-		}
-	}
-
 #if IS_TESTING
 	//Test enabled
 
@@ -74,8 +66,7 @@ int main(int argc, char* argv[])
 		{
 			for (size_t j = 0; j != 10; ++j)
 			{
-				StaticBlock block{ grid.getCoord(i, j), blockSize, SDL_FColor{ 0.05f * i, 0.1f * j, 0.5f, 1.0 } };
-				grid.addBlock(i, j, block);
+				grid.ActivateBlock(CellCoord(i,j), true);
 			}
 		}
 	}

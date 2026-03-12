@@ -14,10 +14,10 @@ Grid::Grid(float x, float y, float blockSize) :
 	blockSize{ blockSize }, x{x}, y{y},
 	blocks{}, activeBlocks { false }
 {
-	for (size_t i = 1; i != NBR_CELL_HORIZONTAL; ++i)
-		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 2, 10 * blockSize, 2};
-	for (size_t i = 1; i != NBR_CELL_VERTICAL; ++i)
-		rectsVerticaux[i] = Rectangle{ x + blockSize * i - 2, y, 2, 20 * blockSize};
+	for (size_t i = 0; i != NBR_CELL_HORIZONTAL + 1; ++i)
+		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 1, 10 * blockSize, 2 };
+	for (size_t i = 0; i != NBR_CELL_VERTICAL + 1; ++i)
+		rectsVerticaux[i] = Rectangle{ x + blockSize * i - 1, y, 2, 20 * blockSize };
 
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i)
 		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j)
