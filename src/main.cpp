@@ -78,10 +78,11 @@ int main(int argc, char* argv[])
 	
 #endif // IS_TESTING
 
-	std::ofstream frameFile;
+#if IS_TRACKING
+	std::ofstream frameFile{"../src/log/frames.txt"};
+#endif // IS_TRACKING
 #if IS_USING_IMGUI
 	SetupImGuiContext(window, renderer);
-	frameFile.open("../src/log/frames.txt");
 #endif
 
 	bool running = true;
@@ -105,15 +106,15 @@ int main(int argc, char* argv[])
 
 		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 
-		if (frameFile.is_open()) {
-			++frameCount;
-			auto elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
-			if (elapsed_time >= std::chrono::seconds(secondCount)) {
-				frameFile << secondCount << " seconds elapsed : " << frameCount << "fps" << std::endl;
-				++secondCount;
-				frameCount = 0;
-			}
+#if IS_TRACKING
+		++frameCount;
+		auto elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
+		if (elapsed_time >= std::chrono::seconds(secondCount)) {
+			frameFile << secondCount << " seconds elapsed : " << frameCount << "fps" << std::endl;
+			++secondCount;
+			frameCount = 0;
 		}
+#endif // IS_TRACKING
 
 		while (SDL_PollEvent(&event)) {
 #if IS_USING_IMGUI

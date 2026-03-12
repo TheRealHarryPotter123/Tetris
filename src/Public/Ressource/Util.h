@@ -10,6 +10,7 @@
 
 #define IS_USING_IMGUI true 		//Allows to turn off all ImGui, since it will not be used in the final version
 #define IS_TESTING false            //Allows to turn on testing
+#define IS_TRACKING true            //Allows to turn on tracking of performance data in text files
 #define TYPE_OF_TEST 0              //Specify which test is used, 0 = full grid, 1 = etc...
 
 #include <SDL3/SDL.h>
