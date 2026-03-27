@@ -10,7 +10,7 @@
 
 #define IS_USING_IMGUI true 		//Allows to turn off all ImGui, since it will not be used in the final version
 #define IS_TESTING false            //Allows to turn on testing
-#define IS_TRACKING true            //Allows to turn on tracking of performance data in text files
+#define IS_TRACKING false            //Allows to turn on tracking of performance data in text files
 #define TYPE_OF_TEST 0              //Specify which test is used, 0 = full grid, 1 = etc...
 
 #include <SDL3/SDL.h>
@@ -47,7 +47,30 @@ struct CellCoord
     }
 };
 
+//Palettes for blocks
+enum EColourPalette: std::uint8_t
+{
+	red, 
+	orange, 
+	yellow, 
+	green, 
+	light_blue, 
+	dark_blue, 
+	purple,
+    
+	COUNT   // only used to know how many colour palettes exists
+};
 
+static SDL_FColor palettes[EColourPalette::COUNT]
+{
+	SDL_FColor{255,0  ,0  ,255}, //red
+    SDL_FColor{255,255,0  ,255}, //orange
+    SDL_FColor{0  ,255,0  ,255}, //yellow
+    SDL_FColor{0  ,255,0  ,255}, //green
+    SDL_FColor{0  ,0  ,255,255}, //light_blue
+    SDL_FColor{0  ,0  ,255,255}, //dark_blue
+    SDL_FColor{255,0  ,255,255}  //purple
+};                                          
 
 //operators for SDL classes
 inline SDL_FPoint operator+(SDL_FPoint p1, SDL_FPoint p2)

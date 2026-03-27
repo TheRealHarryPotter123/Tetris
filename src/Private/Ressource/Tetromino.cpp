@@ -64,11 +64,6 @@ Tetromino::Tetromino(TetrominoType type, CellCoord center)
 	}
 }
 
-bool Tetromino::Rotate(TypeOfTurn turn)
-{
-	//Needs definition
-	return false;
-}
 
 bool Tetromino::Fall(int nbrCells)
 {

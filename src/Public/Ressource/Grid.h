@@ -10,7 +10,19 @@
 #include "StaticBlock.h"
 #include "Tetromino.h"
 
+enum ECellState : std::uint8_t {empty, occupied_static_block, occupied_tetromino};
+
+struct Cell
+{
+	ECellState state = empty;
+	EColourPalette color = purple;
+
+	bool IsEmpty() const { return state == empty; };
+};
+
 class Grid {
+
+/*---------- BEGIN : Display -------*/
 private:
 	class Rectangle {
 	private:
@@ -22,29 +34,41 @@ private:
 		void draw(SDL_Renderer*);
 	};
 
-private:
 	float x, y;
 	float blockSize;
 	Rectangle rectsHorizontaux[NBR_CELL_HORIZONTAL + 1];
 	Rectangle rectsVerticaux[NBR_CELL_VERTICAL + 1];
 	StaticBlock blocks[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
-	bool activeBlocks[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
+	
+public:
+	void draw(SDL_Renderer* renderer);
+	SDL_FPoint getCoord(size_t, size_t) const;
+	SDL_FPoint getCoord(CellCoord) const;
+
+	/*---------- END : Display -------*/
+
+	/*---------- BEGIN : Logic-------*/
+private:
+	Cell cells[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
 
 	Tetromino tetromino{};
 	
 	float timeBetweenFalls = 0.75;
 	float timeToNextFall = timeBetweenFalls;
 
-	inline bool IsCellValid(CellCoord coord) 
+	Cell& GetCell(CellCoord coord) { return cells[coord.x][coord.y]; }
+	const Cell& GetCell(CellCoord coord) const { return cells[coord.x][coord.y]; }
+
+	static bool IsCellValid(CellCoord coord) 
 	{ 
 		return 0 <= coord.x && coord.x < NBR_CELL_HORIZONTAL 
 			&& 0 <= coord.y && coord.y < NBR_CELL_VERTICAL;
 	};
-	inline bool IsCellOccupied(CellCoord coord) { return activeBlocks[coord.x][coord.y]; };
 
+	bool IsCellOccupied(CellCoord coord) const;
 
 #if IS_USING_IMGUI
-	bool ShouldTetrominoFall = false;
+	bool ShouldTetrominoFall = true;
 #endif
 
 public:
@@ -53,11 +77,6 @@ public:
 	void Update(float deltaTime);
 	
 	void AddTetromino();
-	inline void ActivateBlock(CellCoord coord, bool shouldActivate) { activeBlocks[coord.x][coord.y] = shouldActivate; };
-
-	void draw(SDL_Renderer* renderer);
-	SDL_FPoint getCoord(size_t, size_t) const;
-	SDL_FPoint getCoord(CellCoord) const;
 
 #if IS_USING_IMGUI
 	void DrawDebug();

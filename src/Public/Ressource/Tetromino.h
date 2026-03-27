@@ -11,27 +11,26 @@
 constexpr int NBR_CELLS_PER_TETROMINO = 4;
 
 //All tetromino types that can be used
-enum TetrominoType { I, J, L, T, S, Z, O, INVALID_TETROMINO };
+enum TetrominoType : std::uint8_t { I, J, L, T, S, Z, O, INVALID_TETROMINO };
 
-enum TypeOfTurn { clockwise, counter_clockwise };
+enum ETypeOfTurn : std::uint8_t { clockwise, counter_clockwise };
 
-class Tetromino {
-private:
+struct Tetromino {
 	
-	//The coords in the grid of each block that composes the tetromino, cells[0] is considered the center
-	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
-	TetrominoType type = INVALID_TETROMINO;
-
-public:
 	Tetromino() = default;
 	Tetromino(TetrominoType type, CellCoord center);
+
+	//The coords in the grid of each block that composes the tetromino, cells[0] is considered the center
+	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
+	
+	TetrominoType type = INVALID_TETROMINO;
 
 	TetrominoType GetType() const { return type; };
 	const std::vector<CellCoord>& GetCells() const { return cells; };
 	
 	bool IsValid() const { return type != INVALID_TETROMINO; };
 	
-	bool Rotate(TypeOfTurn turn);	//Try to rotate the tetromino, if the Rotate fails, return false
+	bool Rotate(ETypeOfTurn turn);	//Try to rotate the tetromino, if the Rotate fails, return false
 	bool Fall(int nbrCells);		//Try to make the tetromino fall by x cells, return false if it fails
 
 	void draw(SDL_Renderer* renderer);

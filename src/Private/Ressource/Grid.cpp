@@ -10,9 +10,17 @@
 #include <iostream>
 
 
-Grid::Grid(float x, float y, float blockSize) :
-	blockSize{ blockSize }, x{x}, y{y},
-	blocks{}, activeBlocks { false }
+bool Grid::IsCellOccupied(CellCoord coord) const
+{
+	return cells[coord.x][coord.y].state != empty;
+}
+
+Grid::Grid(float x, float y, float blockSize) 
+	: x{x}
+	, y{y}
+	, blockSize{ blockSize }
+	, blocks{}
+	, cells {}
 {
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL + 1; ++i)
 		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 1, 10 * blockSize, 2 };
@@ -21,7 +29,7 @@ Grid::Grid(float x, float y, float blockSize) :
 
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i)
 		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j)
-			blocks[i][j] = StaticBlock(getCoord(i, j), blockSize, SDL_FColor(1.0,0.4,0.7,1.0));
+			blocks[i][j] = StaticBlock(getCoord(i, j), blockSize, SDL_FColor(1.0,1.0,1.0,1.0));
 }
 
 void Grid::Update(float deltaTime)
@@ -55,14 +63,14 @@ void Grid::Update(float deltaTime)
 
 		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 		{
-			ActivateBlock(oldTetrominoCells[i], false);
+			GetCell(oldTetrominoCells[i]).state = empty;
 		}
 
 		//We need to use 2 loops, otherwise we could deactivate a block right after we already activated it
 		// TODO: we will need to implement a way to know if the block is the current tetromino or if it is a static block to avoid 
 		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 		{
-			ActivateBlock(newTetrominoCells[i], true);
+			GetCell(oldTetrominoCells[i]).state = occupied_tetromino;
 		}
 		
 		timeToNextFall = timeBetweenFalls;
@@ -71,14 +79,13 @@ void Grid::Update(float deltaTime)
 
 void Grid::AddTetromino()
 {
-
 	TetrominoType randTetrominoType = (TetrominoType)(rand() % INVALID_TETROMINO);
 
 	tetromino = Tetromino{ randTetrominoType, CellCoord{0,NBR_CELL_VERTICAL/2 - 1}};
 
 	for (CellCoord cell : tetromino.GetCells())
 	{
-		activeBlocks[cell.x][cell.y] = true;
+		GetCell(cell).state = occupied_tetromino;
 	}
 }
 	
@@ -91,8 +98,8 @@ void Grid::draw(SDL_Renderer* renderer) {
 
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i) {
 		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j) {
-			if (activeBlocks[i][j])
-				blocks[i][j].drawBlock(renderer);
+			if (!cells[i][j].IsEmpty())
+				blocks[i][j].drawBlock(renderer, cells[i][j].color);
 		}
 	}
 
@@ -144,7 +151,7 @@ void Grid::DrawDebug()
 		{
 			for (int j = 0; j != NBR_CELL_VERTICAL; ++j)
 			{
-				ImGui::TextColored(ImVec4(1.0, !activeBlocks[i][j], !activeBlocks[i][j],1.0), "%d", activeBlocks[i][j]);
+				//ImGui::TextColored(ImVec4(1.0, !activeBlocks[i][j], !activeBlocks[i][j],1.0), "%d", activeBlocks[i][j]);
 
 				ImGui::TableNextColumn();
 			}

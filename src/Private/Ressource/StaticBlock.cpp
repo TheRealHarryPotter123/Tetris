@@ -6,7 +6,7 @@
 #include "../../Public/Ressource/StaticBlock.h"
 
 StaticBlock::StaticBlock(float x, float y, float blockSize, SDL_FColor color)
-	: coord{ x, y }, color{ color }
+	: coord{ x, y }
 {
 	const float factor = 1.0f / 6.0f;
 	const SDL_FPoint points[]{
@@ -61,7 +61,7 @@ StaticBlock::StaticBlock(SDL_FPoint coord, float blockSize, SDL_FColor color)
 {}
 
 StaticBlock::StaticBlock() 
-	: coord{ 0, 0 }, color{ 0.0f,0.0f,0.0f,0.0f }
+	: coord{ 0, 0 }
 	, topBorder{ 0 }, LBorder{ 0 }, RBorder{ 0 }
 	, bottomBorder{ 0 }, CenterBlock{ 0 }
 {}
@@ -82,11 +82,31 @@ StaticBlock& StaticBlock::operator=(const StaticBlock& other)
 	return *this;
 }
 
-void StaticBlock::drawBlock(SDL_Renderer* renderer)
+void StaticBlock::UpdateColor(EColourPalette newColor)
 {
-	SDL_RenderGeometry(renderer, NULL, CenterBlock, 4, indices, 6);
-	SDL_RenderGeometry(renderer, NULL, topBorder, 4, indices, 6);
-	SDL_RenderGeometry(renderer, NULL, bottomBorder, 4, indices, 6);
-	SDL_RenderGeometry(renderer, NULL, LBorder, 4, indices, 6);
-	SDL_RenderGeometry(renderer, NULL, RBorder, 4, indices, 6);
+	if (color == newColor)
+		return; //no need to change colours
+
+	color = newColor;
+	SDL_FColor newPalette = palettes[color];
+
+	for (size_t i = 0; i != 4; ++i)
+	{
+		CenterBlock[i].color = newPalette;
+		topBorder[i].color = newPalette + SDL_FColor{ 0.5f, 0.5f, 0.5f, 0.0f };
+		bottomBorder[i].color = newPalette * 0.5;
+		LBorder[i].color = newPalette * 0.75;
+		RBorder[i].color = newPalette * 0.75;
+	}
+}
+
+void StaticBlock::drawBlock(SDL_Renderer* renderer, EColourPalette newColour)
+{
+	UpdateColor(newColour);
+
+	SDL_RenderGeometry(renderer, nullptr, CenterBlock, 4, indices, 6);
+	SDL_RenderGeometry(renderer, nullptr, topBorder, 4, indices, 6);
+	SDL_RenderGeometry(renderer, nullptr, bottomBorder, 4, indices, 6);
+	SDL_RenderGeometry(renderer, nullptr, LBorder, 4, indices, 6);
+	SDL_RenderGeometry(renderer, nullptr, RBorder, 4, indices, 6);
 }
