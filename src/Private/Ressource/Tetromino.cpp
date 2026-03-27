@@ -1,4 +1,6 @@
 /* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
+*    Modified by
+*		Maxime Sevigny, 27/03/2026: Restructuring tetromino into Struct, so movements can be done into Grid (it will be easier to check the next valid position)
 */
 
 #include "../../Public/Ressource/Tetromino.h"

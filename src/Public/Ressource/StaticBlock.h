@@ -1,6 +1,7 @@
 /* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
 *	 Modified by
 *      Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
+*      Maxime Sevigny, 27/03/2026 : Added pre-defined coloured
 */
 
 #pragma once
@@ -18,7 +19,7 @@ private:
 	SDL_Vertex RBorder[4];
 	SDL_Vertex bottomBorder[4];
 	SDL_Vertex CenterBlock[4];
-	int indices[6]{ 0, 1, 2, 1, 2, 3 };
+	const int indices[6]{ 0, 1, 2, 1, 2, 3 };
 
 	void UpdateColor(EColourPalette newColour);
 public:

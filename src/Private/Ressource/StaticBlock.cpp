@@ -1,6 +1,7 @@
 /* Created by Maxime Sevigny, 10/03/2026 : Structuration des fichiers en .h et .cpp
 *	 Modified by
 *      Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
+*      Maxime Sevigny, 27/03/2026 : Added pre-defined coloured
 */
 
 #include "../../Public/Ressource/StaticBlock.h"
@@ -88,7 +89,7 @@ void StaticBlock::UpdateColor(EColourPalette newColor)
 		return; //no need to change colours
 
 	color = newColor;
-	SDL_FColor newPalette = palettes[color];
+	SDL_FColor newPalette = ColourPalettes[color];
 
 	for (size_t i = 0; i != 4; ++i)
 	{

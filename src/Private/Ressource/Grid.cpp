@@ -3,6 +3,7 @@
 *    	Thomas Lesieur : 11/03/2026 : ajout de l'affichage de la grille
 *		Maxime Sevigny, 11/03/2026: Added DrawDebug()
 *		Maxime Sevigny, 12/03/2026: First messy pass for base tetromino physic - tetromino are generated, fall and land (only on bottom of grid)
+*		Maxime Sevigny, 27/03/2026: Split display and logic, so it is easier to move blocks without messing with the display
 */
 #pragma once
 

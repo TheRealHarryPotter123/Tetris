@@ -4,6 +4,7 @@
 *       Thomas Lesieur, 10/03/2026 : Ajout de la grille
 *       Maxime Sevigny, 11/03/2026: moved #define for ImGui and testing to be in this file, Added function test()
 *       Maxime Sevigny, 12/03/2026: added CellCoord
+*       Maxime Sevigny, 27/03/2026 : Added pre-defined coloured in ColourPalettes
 */
 
 #pragma once
@@ -58,10 +59,10 @@ enum EColourPalette: std::uint8_t
 	dark_blue, 
 	purple,
     
-	COUNT   // only used to know how many colour palettes exists
+	COUNT   // only used to know how many colour ColourPalettes exists
 };
 
-static SDL_FColor palettes[EColourPalette::COUNT]
+static constexpr SDL_FColor ColourPalettes[EColourPalette::COUNT]
 {
 	SDL_FColor{255,0  ,0  ,255}, //red
     SDL_FColor{255,255,0  ,255}, //orange
