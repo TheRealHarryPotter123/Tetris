@@ -26,6 +26,8 @@ struct Tetromino {
 	
 	TetrominoType type = INVALID_TETROMINO;
 
+	EColourPalette color = red;
+
 	TetrominoType GetType() const { return type; };
 	const std::vector<CellCoord>& GetCells() const { return cells; };
 	

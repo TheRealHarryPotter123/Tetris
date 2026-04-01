@@ -23,17 +23,15 @@
 #endif //IS_USING_IMGUI
 
 #include "Public/Ressource/Grid.h"
-#include "Public/Ressource/Tetromino.h"
-#include "Public/Ressource/StaticBlock.h"
 #include "Public/Ressource/DisplayUtil.h"
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 840
 
-static SDL_Window* window = NULL;
-static SDL_Renderer* renderer = NULL;
+static SDL_Window* window = nullptr;
+static SDL_Renderer* renderer = nullptr;
 
-constexpr SDL_FColor clear_color = SDL_FColor(1.0,1.0,1.0,1.0);
+constexpr SDL_FColor clear_color{ 1.0,1.0,1.0,1.0 };
 
 
 int main(int argc, char* argv[])
@@ -104,9 +102,9 @@ int main(int argc, char* argv[])
 		auto elapsed_milli = (float)std::chrono::duration<double, std::milli>(elapsed_Time).count();
 		auto elapsed_second = (float)std::chrono::duration<double, std::ratio<1, 1>>(elapsed_Time).count();
 
-		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 
 #if IS_TRACKING
+		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 		++frameCount;
 		auto elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
 		if (elapsed_time >= std::chrono::seconds(secondCount)) {

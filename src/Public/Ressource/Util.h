@@ -64,13 +64,13 @@ enum EColourPalette: std::uint8_t
 
 static constexpr SDL_FColor ColourPalettes[EColourPalette::COUNT]
 {
-	SDL_FColor{255,0  ,0  ,255}, //red
-    SDL_FColor{255,255,0  ,255}, //orange
-    SDL_FColor{0  ,255,0  ,255}, //yellow
-    SDL_FColor{0  ,255,0  ,255}, //green
-    SDL_FColor{0  ,0  ,255,255}, //light_blue
-    SDL_FColor{0  ,0  ,255,255}, //dark_blue
-    SDL_FColor{255,0  ,255,255}  //purple
+	SDL_FColor{1    ,0    ,0   ,1.0f}, //red
+    SDL_FColor{0.7f ,0.4f ,0   ,1.0f}, //orange
+    SDL_FColor{0.9f ,0.85f,0.4f,1.0f}, //yellow
+    SDL_FColor{0.3f ,0.8f ,0   ,1.0f}, //green
+    SDL_FColor{0    ,0.85f,0.8f,1.0f}, //light_blue
+    SDL_FColor{0.15f,0.25f,0.8f,1.0f}, //dark_blue
+    SDL_FColor{0.5f ,0    ,0.5 ,1.0f}  //purple
 };                                          
 
 //operators for SDL classes

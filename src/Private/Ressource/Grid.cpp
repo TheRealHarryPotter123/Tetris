@@ -60,7 +60,6 @@ void Grid::Update(float deltaTime)
 		}
 
 		std::vector<CellCoord> newTetrominoCells = tetromino.GetCells();
-		
 
 		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 		{
@@ -71,7 +70,8 @@ void Grid::Update(float deltaTime)
 		// TODO: we will need to implement a way to know if the block is the current tetromino or if it is a static block to avoid 
 		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 		{
-			GetCell(oldTetrominoCells[i]).state = occupied_tetromino;
+			GetCell(newTetrominoCells[i]).state = occupied_tetromino;
+			GetCell(newTetrominoCells[i]).color = tetromino.color;
 		}
 		
 		timeToNextFall = timeBetweenFalls;
@@ -83,10 +83,12 @@ void Grid::AddTetromino()
 	TetrominoType randTetrominoType = (TetrominoType)(rand() % INVALID_TETROMINO);
 
 	tetromino = Tetromino{ randTetrominoType, CellCoord{0,NBR_CELL_VERTICAL/2 - 1}};
+	tetromino.color = (EColourPalette)(rand() % EColourPalette::COUNT);
 
 	for (CellCoord cell : tetromino.GetCells())
 	{
 		GetCell(cell).state = occupied_tetromino;
+		GetCell(cell).color = tetromino.color;
 	}
 }
 	
@@ -139,6 +141,33 @@ void Grid::DrawDebug()
 {
 	ImGui::Begin("Grid");
 	ImGui::Text("This is the debug window for the play grid");
+
+	if (tetromino.IsValid())
+	{
+		std::string colorStr;
+		switch (tetromino.color)
+		{
+			case red: colorStr = "Red";
+				break;
+			case orange: colorStr = "Orange";
+				break;
+			case yellow: colorStr = "Yellow";
+				break;
+			case green: colorStr = "Green";
+				break;
+			case light_blue: colorStr = "Light blue";
+				break;
+			case dark_blue: colorStr = "Dark blue";
+				break;
+			case purple: colorStr = "Purple";
+				break;
+
+			default: colorStr = "NOT VALID COLOR DEFINED";
+		}
+		ImGui::Text("Tetromino colour: %s", colorStr.c_str());
+	}
+
+
 
 	ImGui::Text("Time until next fall: %f / %f", timeToNextFall, timeBetweenFalls);
 
