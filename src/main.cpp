@@ -5,6 +5,7 @@
 *		Maxime Sevigny : 10/03/2026 : Structuration des fichiers en .h et .cpp
 *		Thomas Lesieur : 11/03/2026 : Ajout de la grille et de blocs statiques a l'interieur
 *		Maxime Sevigny : 11/03/2026 : Bug fix - merge problem + clean fct main + creer test de remplissage de la grille
+*		Maxime Sevigny : 01/04/2026 : Add color per tetromino
 */
 
 #include "Public/Ressource/Util.h"

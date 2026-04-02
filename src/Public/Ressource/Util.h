@@ -5,6 +5,7 @@
 *       Maxime Sevigny, 11/03/2026: moved #define for ImGui and testing to be in this file, Added function test()
 *       Maxime Sevigny, 12/03/2026: added CellCoord
 *       Maxime Sevigny, 27/03/2026 : Added pre-defined coloured in ColourPalettes
+*		Maxime Sevigny, 01/04/2026: Add color per tetromino
 */
 
 #pragma once
