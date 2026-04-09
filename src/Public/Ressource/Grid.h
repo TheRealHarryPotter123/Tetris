@@ -21,6 +21,14 @@ private:
 		Rectangle& operator=(const Rectangle&);
 		void draw(SDL_Renderer*);
 	};
+	struct requestHandler {
+		bool moveLeftRequested;
+		bool moveRightRequested;
+		bool rotateRightRequested;
+		bool rotateLeftRequested;
+		bool accelerateRequested;
+		bool instadropRequested;
+	};
 
 private:
 	float x, y;
@@ -31,6 +39,7 @@ private:
 	bool activeBlocks[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
 
 	Tetromino tetromino{};
+	requestHandler handler;
 	
 	float timeBetweenFalls = 0.75;
 	float timeToNextFall = timeBetweenFalls;
@@ -50,6 +59,7 @@ private:
 public:
 	Grid(float = 0, float = 0, float = 0);
 	
+	void handleInput(SDL_KeyboardEvent);
 	void Update(float deltaTime);
 	
 	void AddTetromino();
