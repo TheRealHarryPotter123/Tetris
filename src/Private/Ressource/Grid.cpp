@@ -47,35 +47,25 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 		{
 		case SDL_SCANCODE_LEFT:
 			// move left
-			if (!event.repeat)
-			{
-				handler.moveLeftRequested = true;
-				if (handler.moveRightRequested)
-					handler.moveRightRequested = false;
-			}
-			else if (!handler.moveRightRequested)
-				handler.moveLeftRequested = true;
+			handler.moveLeftRequested = true;
+			handler.holdingLeft = true;
 			break;
 		case SDL_SCANCODE_RIGHT:
 			// move right
-			if (!event.repeat)
-			{
-				handler.moveRightRequested = true;
-				if (handler.moveLeftRequested)
-					handler.moveLeftRequested = false;
-			}
-			else if (!handler.moveLeftRequested)
-				handler.moveRightRequested = true;
+			handler.moveRightRequested = true;
+			handler.holdingRight = true;
 			break;
 		case SDL_SCANCODE_LCTRL:
 		case SDL_SCANCODE_Z:
 			// rotate counter-clockwise (left)
-			handler.rotateLeftRequested = true;
+			if (!event.repeat)
+				handler.rotateLeftRequested = true;
 			break;
 		case SDL_SCANCODE_UP:
 		case SDL_SCANCODE_X:
 			// rotate clockwise (right)
-			handler.rotateRightRequested = true;
+			if (!event.repeat)
+				handler.rotateRightRequested = true;
 			break;
 		case SDL_SCANCODE_DOWN:
 			// accelerate
@@ -83,7 +73,8 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 			break;
 		case SDL_SCANCODE_SPACE:
 			// hard drop
-			handler.instadropRequested = true;
+			if (!event.repeat)
+				handler.instadropRequested = true;
 			break;
 		}
 	}
@@ -94,10 +85,12 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 		case SDL_SCANCODE_LEFT:
 			// move left
 			handler.moveLeftRequested = false;
+			handler.holdingLeft = false;
 			break;
 		case SDL_SCANCODE_RIGHT:
 			// move right
 			handler.moveRightRequested = false;
+			handler.holdingRight = false;
 			break;
 		case SDL_SCANCODE_DOWN:
 			// accelerate
@@ -277,6 +270,20 @@ void Grid::DrawDebug()
 		}
 
 		ImGui::EndTable();
+	}
+
+	if (ImGui::TreeNodeEx("Input", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Move Left\t: %d", handler.moveLeftRequested);
+		ImGui::Text("Holding Left\t: %d", handler.holdingLeft);
+		ImGui::Text("Move Right\t: %d", handler.moveRightRequested);
+		ImGui::Text("Holding Right\t: %d", handler.holdingRight);
+		ImGui::Text("Rotate Right\t: %d", handler.rotateRightRequested);
+		ImGui::Text("Rotate Left\t: %d", handler.rotateLeftRequested);
+		ImGui::Text("Accelerate\t: %d", handler.accelerateRequested);
+		ImGui::Text("Instant Drop\t: %d", handler.instadropRequested);
+
+		ImGui::TreePop();
 	}
 
 	ImGui::End();

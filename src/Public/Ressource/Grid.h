@@ -35,12 +35,14 @@ private:
 		void draw(SDL_Renderer*);
 	};
 	struct requestHandler {
-		bool moveLeftRequested;
-		bool moveRightRequested;
-		bool rotateRightRequested;
-		bool rotateLeftRequested;
-		bool accelerateRequested;
-		bool instadropRequested;
+		bool moveLeftRequested = false;
+		bool holdingLeft = false;
+		bool moveRightRequested = false;
+		bool holdingRight = false;
+		bool rotateRightRequested = false;
+		bool rotateLeftRequested = false;
+		bool accelerateRequested = false;
+		bool instadropRequested = false;
 	};
 
 	float x, y;
