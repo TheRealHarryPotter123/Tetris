@@ -10,6 +10,8 @@
 
 #include "Util.h"
 
+class Grid;
+
 constexpr int NBR_CELLS_PER_TETROMINO = 4;
 
 //All tetromino types that can be used
@@ -17,26 +19,28 @@ enum TetrominoType : std::uint8_t { I, J, L, T, S, Z, O, INVALID_TETROMINO };
 
 enum ETypeOfTurn : std::uint8_t { clockwise, counter_clockwise };
 
-struct Tetromino {
-	
-	Tetromino() = default;
-	Tetromino(TetrominoType type, CellCoord center);
+class Tetromino {
 
 	//The coords in the grid of each block that composes the tetromino, cells[0] is considered the center
 	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
 	
 	TetrominoType type = INVALID_TETROMINO;
 
-	EColourPalette color = red;
+	EColourPalette color = COUNT;
 
-	TetrominoType GetType() const { return type; };
-	const std::vector<CellCoord>& GetCells() const { return cells; };
-	
-	bool IsValid() const { return type != INVALID_TETROMINO; };
-	
-	bool Rotate(ETypeOfTurn turn);	//Try to rotate the tetromino, if the Rotate fails, return false
-	bool Fall(int nbrCells);		//Try to make the tetromino fall by x cells, return false if it fails
+public:
+	Tetromino() = default;
+	Tetromino(TetrominoType type, EColourPalette color, CellCoord center);
 
-	void draw(SDL_Renderer* renderer);
-	inline void Reset() { *this = Tetromino();};
+	TetrominoType GetType() const { return type; }
+	EColourPalette GetColor() const { return color; }
+
+	const std::vector<CellCoord>& GetCells() const { return cells; }
+	
+	bool IsValid() const { return type != INVALID_TETROMINO; }
+	
+	bool Rotate(ETypeOfTurn turn, const Grid* grid);//Try to rotate the tetromino, if the Rotate fails, return false
+	bool Fall(int nbrCells, const Grid* grid);		//Try to make the tetromino fall by x cells, return false if it fails
+
+	inline void Reset() { *this = Tetromino();}
 };

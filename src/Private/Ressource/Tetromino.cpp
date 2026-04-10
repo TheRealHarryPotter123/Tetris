@@ -5,8 +5,12 @@
 
 #include "../../Public/Ressource/Tetromino.h"
 
-Tetromino::Tetromino(TetrominoType type, CellCoord center)
-	: type { type}
+#include "../../Public/Ressource/Grid.h"
+
+class Grid;
+
+Tetromino::Tetromino(TetrominoType type, EColourPalette color, CellCoord center)
+	: type { type }, color{ color }
 {
 
 	cells[0] = center;
@@ -67,7 +71,13 @@ Tetromino::Tetromino(TetrominoType type, CellCoord center)
 }
 
 
-bool Tetromino::Fall(int nbrCells)
+bool Tetromino::Rotate(ETypeOfTurn turn, const Grid* grid)
+{
+	//TODO implement rotating
+	return false;
+}
+
+bool Tetromino::Fall(int nbrCells, const Grid* grid)
 {
 	//First check if fall is possible
 	std::vector<CellCoord> newCells = GetCells();
@@ -75,6 +85,8 @@ bool Tetromino::Fall(int nbrCells)
 	for (size_t i = 0; i < NBR_CELLS_PER_TETROMINO; i++)
 	{
 		if (!newCells[i].Move(nbrCells, 0))
+			return false;
+		if (grid->GetCellState(newCells[i]) == ECellState::occupied_static_block)
 			return false;
 	}
 

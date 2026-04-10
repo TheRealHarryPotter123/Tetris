@@ -52,7 +52,7 @@ public:
 private:
 	Cell cells[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
 
-	Tetromino tetromino{};
+	Tetromino tetromino;
 	
 	float timeBetweenFalls = 0.75;
 	float timeToNextFall = timeBetweenFalls;
@@ -67,6 +67,7 @@ private:
 	};
 
 	bool IsCellOccupied(CellCoord coord) const;
+	ECellState GetCellState(CellCoord coord) const;
 
 #if IS_USING_IMGUI
 	bool ShouldTetrominoFall = true;
@@ -78,6 +79,9 @@ public:
 	void Update(float deltaTime);
 	
 	void AddTetromino();
+
+	friend bool Tetromino::Fall(int, const Grid*);
+	friend bool Tetromino::Rotate(ETypeOfTurn, const Grid*);
 
 #if IS_USING_IMGUI
 	void DrawDebug();

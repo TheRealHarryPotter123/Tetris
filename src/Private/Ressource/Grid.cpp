@@ -17,6 +17,11 @@ bool Grid::IsCellOccupied(CellCoord coord) const
 	return cells[coord.x][coord.y].state != empty;
 }
 
+ECellState Grid::GetCellState(CellCoord coord) const
+{
+	return cells[coord.x][coord.y].state;
+}
+
 Grid::Grid(float x, float y, float blockSize) 
 	: x{x}
 	, y{y}
@@ -54,8 +59,13 @@ void Grid::Update(float deltaTime)
 	{
 		std::vector<CellCoord> oldTetrominoCells = tetromino.GetCells();
 		
-		if (!tetromino.Fall(1))
+		if (!tetromino.Fall(1, this))
 		{//If fall fails, the tetromino stops falling and becomes a normal StaticBlock
+			for (auto cell : oldTetrominoCells)
+			{
+				GetCell(cell).state = occupied_static_block;
+			}
+
 			tetromino.Reset();
 			return;
 		}
@@ -72,7 +82,7 @@ void Grid::Update(float deltaTime)
 		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 		{
 			GetCell(newTetrominoCells[i]).state = occupied_tetromino;
-			GetCell(newTetrominoCells[i]).color = tetromino.color;
+			GetCell(newTetrominoCells[i]).color = tetromino.GetColor();
 		}
 		
 		timeToNextFall = timeBetweenFalls;
@@ -82,14 +92,14 @@ void Grid::Update(float deltaTime)
 void Grid::AddTetromino()
 {
 	TetrominoType randTetrominoType = (TetrominoType)(rand() % INVALID_TETROMINO);
+	EColourPalette randColor = (EColourPalette)(rand() % EColourPalette::COUNT);
 
-	tetromino = Tetromino{ randTetrominoType, CellCoord{0,NBR_CELL_VERTICAL/2 - 1}};
-	tetromino.color = (EColourPalette)(rand() % EColourPalette::COUNT);
+	tetromino = Tetromino( randTetrominoType, randColor, CellCoord{0,NBR_CELL_VERTICAL/2 - 1});
 
 	for (CellCoord cell : tetromino.GetCells())
 	{
 		GetCell(cell).state = occupied_tetromino;
-		GetCell(cell).color = tetromino.color;
+		GetCell(cell).color = tetromino.GetColor();
 	}
 }
 	
@@ -146,7 +156,7 @@ void Grid::DrawDebug()
 	if (tetromino.IsValid())
 	{
 		std::string colorStr;
-		switch (tetromino.color)
+		switch (tetromino.GetColor())
 		{
 			case red: colorStr = "Red";
 				break;
@@ -182,7 +192,15 @@ void Grid::DrawDebug()
 		{
 			for (int j = 0; j != NBR_CELL_VERTICAL; ++j)
 			{
-				//ImGui::TextColored(ImVec4(1.0, !activeBlocks[i][j], !activeBlocks[i][j],1.0), "%d", activeBlocks[i][j]);
+				const Cell& currentCell = cells[i][j];
+				ImVec4 currentColor;
+
+				if (!currentCell.IsEmpty())
+					currentColor = { ColourPalettes[currentCell.color].r,ColourPalettes[currentCell.color].g,ColourPalettes[currentCell.color].b,ColourPalettes[currentCell.color].a };
+				else
+					currentColor = { 1,1,1,1 };
+
+				ImGui::TextColored(currentColor, "%d", currentCell.state);
 
 				ImGui::TableNextColumn();
 			}
