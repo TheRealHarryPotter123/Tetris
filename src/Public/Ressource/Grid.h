@@ -45,10 +45,11 @@ private:
 		Rectangle& operator=(const Rectangle&);
 		void draw(SDL_Renderer*);
 	};
-
-	struct RequestHandler {
+	struct requestHandler {
 		bool moveLeftRequested = false;
+		bool holdingLeft = false;
 		bool moveRightRequested = false;
+		bool holdingRight = false;
 		bool rotateRightRequested = false;
 		bool rotateLeftRequested = false;
 		bool accelerateRequested = false;
