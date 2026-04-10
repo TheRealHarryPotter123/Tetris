@@ -119,16 +119,19 @@ int main(int argc, char* argv[])
 #if IS_USING_IMGUI
 			ImGui_ImplSDL3_ProcessEvent(&event);	//Send event to ImGui, so it can handle mouse clicks et keyboard input
 #endif //IS_USING_IMGUI
-
-			if (event.type == SDL_EVENT_QUIT) {
+			switch (event.type)
+			{
+			case SDL_EVENT_QUIT:
 				running = false;
-			}
-			else if (event.type == SDL_EVENT_WINDOW_RESIZED) {
+				break;
+			case SDL_EVENT_WINDOW_RESIZED:
 				int width, height;
 				SDL_GetWindowSize(window, &width, &height);
 				SDL_SetRenderLogicalPresentation(renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-				//TODO : AJOUTER LES AJUSTEMENTS POUR QUE L'ON AFFICHE LES ELEMENTS SELON LA NOUVELLE TAILLE
-				//i.e. recharger les objets avec les nouvelles tailles
+				break;
+			case SDL_EVENT_KEY_DOWN:
+			case SDL_EVENT_KEY_UP:
+				grid.handleInput(event.key);
 			}
 		}
 		

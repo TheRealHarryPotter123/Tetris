@@ -39,6 +39,74 @@ Grid::Grid(float x, float y, float blockSize)
 			blocks[i][j] = StaticBlock(getCoord(i, j), blockSize, SDL_FColor(1.0,1.0,1.0,1.0));
 }
 
+void Grid::handleInput(SDL_KeyboardEvent event)
+{
+	if (event.type == SDL_EVENT_KEY_DOWN)
+	{
+		switch (event.scancode)
+		{
+		case SDL_SCANCODE_LEFT:
+			// move left
+			if (!event.repeat)
+			{
+				handler.moveLeftRequested = true;
+				if (handler.moveRightRequested)
+					handler.moveRightRequested = false;
+			}
+			else if (!handler.moveRightRequested)
+				handler.moveLeftRequested = true;
+			break;
+		case SDL_SCANCODE_RIGHT:
+			// move right
+			if (!event.repeat)
+			{
+				handler.moveRightRequested = true;
+				if (handler.moveLeftRequested)
+					handler.moveLeftRequested = false;
+			}
+			else if (!handler.moveLeftRequested)
+				handler.moveRightRequested = true;
+			break;
+		case SDL_SCANCODE_LCTRL:
+		case SDL_SCANCODE_Z:
+			// rotate counter-clockwise (left)
+			handler.rotateLeftRequested = true;
+			break;
+		case SDL_SCANCODE_UP:
+		case SDL_SCANCODE_X:
+			// rotate clockwise (right)
+			handler.rotateRightRequested = true;
+			break;
+		case SDL_SCANCODE_DOWN:
+			// accelerate
+			handler.accelerateRequested = true;
+			break;
+		case SDL_SCANCODE_SPACE:
+			// hard drop
+			handler.instadropRequested = true;
+			break;
+		}
+	}
+	else
+	{
+		switch (event.scancode)
+		{
+		case SDL_SCANCODE_LEFT:
+			// move left
+			handler.moveLeftRequested = false;
+			break;
+		case SDL_SCANCODE_RIGHT:
+			// move right
+			handler.moveRightRequested = false;
+			break;
+		case SDL_SCANCODE_DOWN:
+			// accelerate
+			handler.accelerateRequested = false;
+			break;
+		}
+	}
+}
+
 void Grid::Update(float deltaTime)
 {
 #if IS_USING_IMGUI
