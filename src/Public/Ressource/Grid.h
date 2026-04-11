@@ -7,11 +7,21 @@
 */
 #pragma once
 
+#include <variant>
+
 #include "Util.h"
 #include "StaticBlock.h"
 #include "Tetromino.h"
 
 enum ECellState : std::uint8_t {empty, occupied_static_block, occupied_tetromino};
+
+struct Rotation_CW {};
+struct Rotation_CounterCW {};
+struct Fall {};
+struct Right {};
+struct Left {};
+
+using movementType = std::variant<Rotation_CW, Rotation_CounterCW, Fall, Right, Left>;
 
 struct Cell
 {
@@ -34,13 +44,14 @@ private:
 		Rectangle& operator=(const Rectangle&);
 		void draw(SDL_Renderer*);
 	};
-	struct requestHandler {
-		bool moveLeftRequested;
-		bool moveRightRequested;
-		bool rotateRightRequested;
-		bool rotateLeftRequested;
-		bool accelerateRequested;
-		bool instadropRequested;
+
+	struct RequestHandler {
+		bool moveLeftRequested = false;
+		bool moveRightRequested = false;
+		bool rotateRightRequested = false;
+		bool rotateLeftRequested = false;
+		bool accelerateRequested = false;
+		bool instadropRequested = false;
 	};
 
 	float x, y;
@@ -61,10 +72,12 @@ private:
 	Cell cells[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
 
 	Tetromino tetromino;
-	requestHandler handler;
+	RequestHandler handler;
 	
-	float timeBetweenFalls = 0.75;
+	float timeBetweenFalls = 0.5f;
+	float minTimeBetweenMove = 0.1f;	//Small buffer between registering input
 	float timeToNextFall = timeBetweenFalls;
+	float timeToNextMove = 0;
 
 	Cell& GetCell(CellCoord coord) { return cells[coord.x][coord.y]; }
 	const Cell& GetCell(CellCoord coord) const { return cells[coord.x][coord.y]; }
@@ -77,6 +90,10 @@ private:
 
 	bool IsCellOccupied(CellCoord coord) const;
 	ECellState GetCellState(CellCoord coord) const;
+	
+	bool MoveTetromino(movementType move);	//Moves the tetromino according the given type of movement and returns if the tetromino was stopped
+	void UpdateMove();
+	void UpdateFall();
 
 #if IS_USING_IMGUI
 	bool ShouldTetrominoFall = true;
@@ -87,11 +104,12 @@ public:
 	
 	void handleInput(SDL_KeyboardEvent);
 	void Update(float deltaTime);
-	
 	void AddTetromino();
 
-	friend bool Tetromino::Fall(int, const Grid*);
+
+	friend bool Tetromino::Fall(const Grid*);
 	friend bool Tetromino::Rotate(ETypeOfTurn, const Grid*);
+	friend bool Tetromino::MoveSideways(ETypeOfSidewayMove, const Grid*);
 
 #if IS_USING_IMGUI
 	void DrawDebug();

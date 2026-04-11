@@ -47,7 +47,33 @@ struct CellCoord
         y = newY;
         return true;
     }
+    
+	CellCoord& operator*=(int scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        return *this;
+    }
+	
+	CellCoord& operator+=(const CellCoord& other)
+    {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+	CellCoord& operator-=(const CellCoord& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        return *this;
+    }
+    CellCoord operator-(const CellCoord& other) const
+    {
+        return CellCoord{this->x - other.x, this->y - other.y };
+    }
+
 };
+
 
 //Palettes for blocks
 enum EColourPalette: std::uint8_t
@@ -104,4 +130,16 @@ inline auto test(F f, Args&&... args)
     auto res = f(std::forward<Args>(args)...);
     auto post = high_resolution_clock::now();
     return pair{ res, post - pre };
+}
+
+//Used to handle different movement type
+template <class ... P> struct Combine : P... 
+{
+    Combine(P... ps) : P{ ps }... {}
+    using P::operator()...;
+};
+template <class ... F>
+Combine<F...> combine(F... fs)
+{
+    return { fs ... };
 }

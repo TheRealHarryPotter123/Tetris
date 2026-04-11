@@ -9,7 +9,6 @@
 #pragma once
 
 #include "../../Public/Ressource/Grid.h"
-#include <iostream>
 
 
 bool Grid::IsCellOccupied(CellCoord coord) const
@@ -50,8 +49,7 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 			if (!event.repeat)
 			{
 				handler.moveLeftRequested = true;
-				if (handler.moveRightRequested)
-					handler.moveRightRequested = false;
+				handler.moveRightRequested = false;
 			}
 			else if (!handler.moveRightRequested)
 				handler.moveLeftRequested = true;
@@ -61,8 +59,7 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 			if (!event.repeat)
 			{
 				handler.moveRightRequested = true;
-				if (handler.moveLeftRequested)
-					handler.moveLeftRequested = false;
+				handler.moveLeftRequested = false;
 			}
 			else if (!handler.moveLeftRequested)
 				handler.moveRightRequested = true;
@@ -103,6 +100,10 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 			// accelerate
 			handler.accelerateRequested = false;
 			break;
+		case SDL_SCANCODE_UP:
+			// accelerate
+			handler.rotateRightRequested = false;
+			break;
 		}
 	}
 }
@@ -121,40 +122,86 @@ void Grid::Update(float deltaTime)
 		return;
 	}
 
-	timeToNextFall -= deltaTime;
+	//only update if corresponding timers are over
+	if (timeToNextMove <= 0)
+		UpdateMove();
+	else
+		timeToNextMove -= deltaTime;
 
 	if (timeToNextFall <= 0)
-	{
-		std::vector<CellCoord> oldTetrominoCells = tetromino.GetCells();
-		
-		if (!tetromino.Fall(1, this))
-		{//If fall fails, the tetromino stops falling and becomes a normal StaticBlock
-			for (auto cell : oldTetrominoCells)
-			{
-				GetCell(cell).state = occupied_static_block;
-			}
+		UpdateFall();
+	else
+		timeToNextFall -= deltaTime;
+}
 
-			tetromino.Reset();
-			return;
-		}
+bool Grid::MoveTetromino(movementType move)
+{
+	std::vector<CellCoord> oldTetrominoCells = tetromino.GetCells();
 
-		std::vector<CellCoord> newTetrominoCells = tetromino.GetCells();
+	bool isTetrominoStuck = std::visit(combine(
+		[this](Fall)				{ return !tetromino.Fall(this); },
+		[this](Rotation_CW)		{ tetromino.Rotate(ETypeOfTurn::clockwise, this); return false; },
+		[this](Rotation_CounterCW)	{ tetromino.Rotate(ETypeOfTurn::counter_clockwise, this); return false; },
+		[this](Right)				{ tetromino.MoveSideways(ETypeOfSidewayMove::right, this); return false; },
+		[this](Left)				{ tetromino.MoveSideways(ETypeOfSidewayMove::left, this); return false; }
+	), move);
 
-		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
+	if (isTetrominoStuck)
+	{//If the tetromino is stuck, it can no longer be moved, the tetromino stops moving and becomes a normal StaticBlock
+		for (auto cell : tetromino.GetCells())
 		{
-			GetCell(oldTetrominoCells[i]).state = empty;
+			GetCell(cell).state = occupied_static_block;
 		}
 
-		//We need to use 2 loops, otherwise we could deactivate a block right after we already activated it
-		// TODO: we will need to implement a way to know if the block is the current tetromino or if it is a static block to avoid 
-		for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
-		{
-			GetCell(newTetrominoCells[i]).state = occupied_tetromino;
-			GetCell(newTetrominoCells[i]).color = tetromino.GetColor();
-		}
-		
-		timeToNextFall = timeBetweenFalls;
+		tetromino.Reset();
+		return true;
 	}
+
+	//if tetromino is not stuck, the grid needs to be updated
+	for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
+	{
+		GetCell(oldTetrominoCells[i]).state = empty;
+	}
+
+	std::vector<CellCoord> newTetrominoCells = tetromino.GetCells();
+
+	//We need to use 2 loops, otherwise we could deactivate a block right after we already activated it
+	for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
+	{
+		GetCell(newTetrominoCells[i]).state = occupied_tetromino;
+		GetCell(newTetrominoCells[i]).color = tetromino.GetColor();
+	}
+
+	//the tetromino is not stuck
+	return false;
+}
+
+void Grid::UpdateMove()
+{
+	//If both move left and right are requested at the same time, do nothing
+	if (handler.moveLeftRequested != handler.moveRightRequested)
+	{
+		MoveTetromino(handler.moveLeftRequested ? movementType(Left{}) : movementType(Right{}));
+	}
+
+	//If both rotation are requested at the same time, do nothing
+	if (handler.rotateLeftRequested != handler.rotateRightRequested)
+	{
+		MoveTetromino(handler.rotateLeftRequested ? movementType(Rotation_CounterCW{}) : movementType(Rotation_CW{}));
+	}
+
+	timeToNextMove = minTimeBetweenMove;
+}
+
+void Grid::UpdateFall()
+{
+	//If fall failed, check if lines were filled
+	if (MoveTetromino(Fall{}))
+	{
+		//TODO clear filled lines
+	}
+
+	timeToNextFall = timeBetweenFalls;
 }
 
 void Grid::AddTetromino()
@@ -220,12 +267,14 @@ void Grid::DrawDebug()
 {
 	ImGui::Begin("Grid");
 	ImGui::Text("This is the debug window for the play grid");
-
-	if (tetromino.IsValid())
+	
+	if (ImGui::TreeNodeEx("Tetromino state", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		std::string colorStr;
-		switch (tetromino.GetColor())
+		if (tetromino.IsValid())
 		{
+			std::string colorStr;
+			switch (tetromino.GetColor())
+			{
 			case red: colorStr = "Red";
 				break;
 			case orange: colorStr = "Orange";
@@ -242,8 +291,15 @@ void Grid::DrawDebug()
 				break;
 
 			default: colorStr = "NOT VALID COLOR DEFINED";
+			}
+			ImGui::Text("Tetromino colour: %s", colorStr.c_str());
 		}
-		ImGui::Text("Tetromino colour: %s", colorStr.c_str());
+		else
+		{
+			ImGui::Text("Tetromino is invalid");
+		}
+
+		ImGui::TreePop();
 	}
 
 
@@ -252,31 +308,48 @@ void Grid::DrawDebug()
 
 	ImGui::Checkbox("Should tetromino fall?", &ShouldTetrominoFall);
 
-	ImGui::SliderFloat("Time between block update", &timeBetweenFalls, 0.01f, 5.0f);
+	ImGui::SliderFloat("Time between block update", &timeBetweenFalls, 0.01f, 3.0f);
+	ImGui::SliderFloat("Time between block move", &minTimeBetweenMove, 0.01f, 1.0f);
 
-	if (ImGui::BeginTable("BlocksTable", NBR_CELL_HORIZONTAL))
+	if (ImGui::TreeNodeEx("Grid state", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		for (int i = 0; i != NBR_CELL_HORIZONTAL; ++i)
+		if (ImGui::BeginTable("BlocksTable", NBR_CELL_VERTICAL))
 		{
-			for (int j = 0; j != NBR_CELL_VERTICAL; ++j)
+			for (int i = 0; i != NBR_CELL_HORIZONTAL; ++i)
 			{
-				const Cell& currentCell = cells[i][j];
-				ImVec4 currentColor;
+				for (int j = 0; j != NBR_CELL_VERTICAL; ++j)
+				{
+					const Cell& currentCell = cells[i][j];
+					ImVec4 currentColor;
 
-				if (!currentCell.IsEmpty())
-					currentColor = { ColourPalettes[currentCell.color].r,ColourPalettes[currentCell.color].g,ColourPalettes[currentCell.color].b,ColourPalettes[currentCell.color].a };
-				else
-					currentColor = { 1,1,1,1 };
+					if (!currentCell.IsEmpty())
+						currentColor = { ColourPalettes[currentCell.color].r,ColourPalettes[currentCell.color].g,ColourPalettes[currentCell.color].b,ColourPalettes[currentCell.color].a };
+					else
+						currentColor = { 1,1,1,1 };
 
-				ImGui::TextColored(currentColor, "%d", currentCell.state);
+					ImGui::TableNextColumn();
+					ImGui::TextColored(currentColor, "%d", currentCell.state);
+				}
 
-				ImGui::TableNextColumn();
+				ImGui::TableNextRow();
 			}
 
-			ImGui::TableNextRow();
+			ImGui::EndTable();
 		}
 
-		ImGui::EndTable();
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNodeEx("Input", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Move Left\t: %d", handler.moveLeftRequested);
+		ImGui::Text("Move Right\t: %d", handler.moveRightRequested);
+		ImGui::Text("Rotate Right\t: %d", handler.rotateRightRequested);
+		ImGui::Text("Rotate Left\t: %d", handler.rotateLeftRequested);
+		ImGui::Text("Accelerate\t: %d", handler.accelerateRequested);
+		ImGui::Text("Instant Drop\t: %d", handler.instadropRequested);
+
+		ImGui::TreePop();
 	}
 
 	ImGui::End();
