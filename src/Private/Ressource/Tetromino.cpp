@@ -137,7 +137,7 @@ bool Tetromino::MoveSideways(ETypeOfSidewayMove dir, const Grid* grid)
 
 	for (size_t i = 0; i < NBR_CELLS_PER_TETROMINO; i++)
 	{
-		if (!newCells[i].Move(0, (int)dir))
+		if (!newCells[i].Move(0, dir))
 			return false;
 		if (grid->GetCellState(newCells[i]) == ECellState::occupied_static_block)
 			return false;
