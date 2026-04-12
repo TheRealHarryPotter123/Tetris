@@ -15,9 +15,6 @@ class Grid;
 
 constexpr int NBR_CELLS_PER_TETROMINO = 4;
 
-//All tetromino types that can be used
-enum TetrominoType : std::uint8_t { I, J, L, T, S, Z, O, INVALID_TETROMINO };
-
 enum ETypeOfTurn : std::int8_t { counter_clockwise = -1, clockwise = 1};
 enum ETypeOfSidewayMove : std::int8_t { left = -1, right = 1};
 
@@ -27,15 +24,13 @@ class Tetromino {
 	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
 	
 	TetrominoType type = INVALID_TETROMINO;
-	EColourPalette color = COUNT;
 
 
 public:
 	Tetromino() = default;
-	Tetromino(TetrominoType type, EColourPalette color, CellCoord center);
+	Tetromino(TetrominoType type, CellCoord center);
 
 	TetrominoType GetType() const { return type; }
-	EColourPalette GetColor() const { return color; }
 
 	const std::vector<CellCoord>& GetCells() const { return cells; }
 	

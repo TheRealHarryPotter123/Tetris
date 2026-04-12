@@ -28,6 +28,7 @@ Grid::Grid(float x, float y, float blockSize)
 	, blockSize{ blockSize }
 	, blocks{}
 	, cells {}
+	, currentBagIndex { 0 }
 {
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL + 1; ++i)
 		rectsHorizontaux[i] = Rectangle{ x, y + i * blockSize - 1, 10 * blockSize, 2 };
@@ -136,7 +137,7 @@ bool Grid::MoveTetromino(movementType move)
 
 	bool isTetrominoStuck = std::visit(combine(
 		[this](Fall)				{ return !tetromino.Fall(this); },
-		[this](Rotation_CW)		{ tetromino.Rotate(ETypeOfTurn::clockwise, this); return false; },
+		[this](Rotation_CW)			{ tetromino.Rotate(ETypeOfTurn::clockwise, this); return false; },
 		[this](Rotation_CounterCW)	{ tetromino.Rotate(ETypeOfTurn::counter_clockwise, this); return false; },
 		[this](Right)				{ tetromino.MoveSideways(ETypeOfSidewayMove::right, this); return false; },
 		[this](Left)				{ tetromino.MoveSideways(ETypeOfSidewayMove::left, this); return false; }
@@ -165,7 +166,7 @@ bool Grid::MoveTetromino(movementType move)
 	for (int i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 	{
 		GetCell(newTetrominoCells[i]).state = occupied_tetromino;
-		GetCell(newTetrominoCells[i]).color = tetromino.GetColor();
+		GetCell(newTetrominoCells[i]).lastTetrominoType = tetromino.GetType();
 	}
 
 	//the tetromino is not stuck
@@ -202,15 +203,18 @@ void Grid::UpdateFall()
 
 void Grid::AddTetromino()
 {
-	TetrominoType randTetrominoType = (TetrominoType)(rand() % INVALID_TETROMINO);
-	EColourPalette randColor = (EColourPalette)(rand() % EColourPalette::COUNT);
+	if (currentBagIndex == 0) {
+		std::shuffle(std::begin(randomTetrominoBag), std::end(randomTetrominoBag), prng);
+	}
+	TetrominoType randTetrominoType = randomTetrominoBag[currentBagIndex];
+	currentBagIndex = (currentBagIndex + 1) % TetrominoType::INVALID_TETROMINO;
 
-	tetromino = Tetromino( randTetrominoType, randColor, CellCoord{0,NBR_CELL_VERTICAL/2 - 1});
+	tetromino = Tetromino(randTetrominoType, CellCoord{0,NBR_CELL_VERTICAL/2 - 1});
 
 	for (CellCoord cell : tetromino.GetCells())
 	{
 		GetCell(cell).state = occupied_tetromino;
-		GetCell(cell).color = tetromino.GetColor();
+		GetCell(cell).lastTetrominoType = tetromino.GetType();
 	}
 }
 	
@@ -224,7 +228,7 @@ void Grid::draw(SDL_Renderer* renderer) {
 	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i) {
 		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j) {
 			if (!cells[i][j].IsEmpty())
-				blocks[i][j].drawBlock(renderer, cells[i][j].color);
+				blocks[i][j].drawBlock(renderer, cells[i][j].lastTetrominoType);
 		}
 	}
 
@@ -269,26 +273,26 @@ void Grid::DrawDebug()
 		if (tetromino.IsValid())
 		{
 			std::string colorStr;
-			switch (tetromino.GetColor())
+			switch (tetromino.GetType())
 			{
-			case red: colorStr = "Red";
+			case I: colorStr = "I";
 				break;
-			case orange: colorStr = "Orange";
+			case J: colorStr = "J";
 				break;
-			case yellow: colorStr = "Yellow";
+			case L: colorStr = "L";
 				break;
-			case green: colorStr = "Green";
+			case T: colorStr = "T";
 				break;
-			case light_blue: colorStr = "Light blue";
+			case S: colorStr = "S";
 				break;
-			case dark_blue: colorStr = "Dark blue";
+			case Z: colorStr = "Z";
 				break;
-			case purple: colorStr = "Purple";
+			case O: colorStr = "O";
 				break;
 
 			default: colorStr = "NOT VALID COLOR DEFINED";
 			}
-			ImGui::Text("Tetromino colour: %s", colorStr.c_str());
+			ImGui::Text("Tetromino color: %s", colorStr.c_str());
 		}
 		else
 		{
@@ -318,8 +322,10 @@ void Grid::DrawDebug()
 					const Cell& currentCell = cells[i][j];
 					ImVec4 currentColor;
 
-					if (!currentCell.IsEmpty())
-						currentColor = { ColourPalettes[currentCell.color].r,ColourPalettes[currentCell.color].g,ColourPalettes[currentCell.color].b,ColourPalettes[currentCell.color].a };
+					if (!currentCell.IsEmpty()) {
+						SDL_FColor color = ColorPalettes[currentCell.lastTetrominoType];
+						currentColor = { color.r, color.g, color.b, color.a };
+					}
 					else
 						currentColor = { 1,1,1,1 };
 

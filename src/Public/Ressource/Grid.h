@@ -3,12 +3,14 @@
 *       Thomas Lesieur, 11/03/2026 : ajout de l'affichage de la grille
 *		Maxime Sevigny, 11/03/2026: Added DrawDebug()
 *		Maxime Sevigny, 12/03/2026: Added Update() to handle the changes to the grid each frame + some support function to read the grid
-*		Maxime Sevigny, 27/03/2026: Added pre-defined colours and Split display and logic, so it is easier to move blocks without messing with the display
+*		Maxime Sevigny, 27/03/2026: Added pre-defined colors and Split display and logic, so it is easier to move blocks without messing with the display
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 */
 #pragma once
 
 #include <variant>
+#include <random>
+#include <algorithm>
 
 #include "Util.h"
 #include "StaticBlock.h"
@@ -27,7 +29,7 @@ using movementType = std::variant<Rotation_CW, Rotation_CounterCW, Fall, Right, 
 struct Cell
 {
 	ECellState state = empty;
-	EColourPalette color = purple;
+	TetrominoType lastTetrominoType = INVALID_TETROMINO;
 
 	bool IsEmpty() const { return state == empty; };
 };
@@ -61,7 +63,17 @@ private:
 	Rectangle rectsHorizontaux[NBR_CELL_HORIZONTAL + 1];
 	Rectangle rectsVerticaux[NBR_CELL_VERTICAL + 1];
 	StaticBlock blocks[NBR_CELL_HORIZONTAL][NBR_CELL_VERTICAL];
-	
+	std::mt19937 prng{ std::random_device{}() };
+	TetrominoType randomTetrominoBag[TetrominoType::INVALID_TETROMINO] = {
+		TetrominoType::I,
+		TetrominoType::J,
+		TetrominoType::L,
+		TetrominoType::T,
+		TetrominoType::S,
+		TetrominoType::Z,
+		TetrominoType::O,
+	};
+	std::size_t currentBagIndex;
 public:
 	void draw(SDL_Renderer* renderer);
 	SDL_FPoint getCoord(size_t, size_t) const;

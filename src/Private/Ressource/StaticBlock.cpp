@@ -70,7 +70,7 @@ StaticBlock::StaticBlock()
 StaticBlock& StaticBlock::operator=(const StaticBlock& other)
 {
 	coord = other.coord;
-	color = other.color;
+	type = other.type;
 
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -83,13 +83,13 @@ StaticBlock& StaticBlock::operator=(const StaticBlock& other)
 	return *this;
 }
 
-void StaticBlock::UpdateColor(EColourPalette newColor)
+void StaticBlock::UpdateType(TetrominoType newType)
 {
-	if (color == newColor)
-		return; //no need to change colours
+	if (type == newType)
+		return; //no need to change colors
 
-	color = newColor;
-	SDL_FColor newPalette = ColourPalettes[color];
+	type = newType;
+	SDL_FColor newPalette = ColorPalettes[type];
 
 	for (size_t i = 0; i != 4; ++i)
 	{
@@ -101,9 +101,9 @@ void StaticBlock::UpdateColor(EColourPalette newColor)
 	}
 }
 
-void StaticBlock::drawBlock(SDL_Renderer* renderer, EColourPalette newColour)
+void StaticBlock::drawBlock(SDL_Renderer* renderer, TetrominoType newType)
 {
-	UpdateColor(newColour);
+	UpdateType(newType);
 
 	SDL_RenderGeometry(renderer, nullptr, CenterBlock, 4, indices, 6);
 	SDL_RenderGeometry(renderer, nullptr, topBorder, 4, indices, 6);

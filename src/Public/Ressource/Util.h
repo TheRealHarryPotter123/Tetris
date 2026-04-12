@@ -4,7 +4,7 @@
 *       Thomas Lesieur, 10/03/2026 : Ajout de la grille
 *       Maxime Sevigny, 11/03/2026: moved #define for ImGui and testing to be in this file, Added function test()
 *       Maxime Sevigny, 12/03/2026: added CellCoord
-*       Maxime Sevigny, 27/03/2026 : Added pre-defined coloured in ColourPalettes
+*       Maxime Sevigny, 27/03/2026 : Added pre-defined colored in ColourPalettes
 *		Maxime Sevigny, 01/04/2026: Add color per tetromino
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 */
@@ -75,30 +75,18 @@ struct CellCoord
 
 };
 
+//All tetromino types that can be used
+enum TetrominoType : std::uint8_t { I, J, L, T, S, Z, O, INVALID_TETROMINO };
 
-//Palettes for blocks
-enum EColourPalette: std::uint8_t
+static constexpr SDL_FColor ColorPalettes[TetrominoType::INVALID_TETROMINO]
 {
-	red, 
-	orange, 
-	yellow, 
-	green, 
-	light_blue, 
-	dark_blue, 
-	purple,
-    
-	COUNT   // only used to know how many colour ColourPalettes exists
-};
-
-static constexpr SDL_FColor ColourPalettes[EColourPalette::COUNT]
-{
-	SDL_FColor{1    ,0    ,0   ,1.0f}, //red
-    SDL_FColor{0.7f ,0.4f ,0   ,1.0f}, //orange
-    SDL_FColor{0.9f ,0.85f,0.4f,1.0f}, //yellow
-    SDL_FColor{0.3f ,0.8f ,0   ,1.0f}, //green
-    SDL_FColor{0    ,0.85f,0.8f,1.0f}, //light_blue
-    SDL_FColor{0.15f,0.25f,0.8f,1.0f}, //dark_blue
-    SDL_FColor{0.5f ,0    ,0.5 ,1.0f}  //purple
+	SDL_FColor{0.0f, 0.9f, 0.9f, 1.0f}, //cyan
+    SDL_FColor{0.1f, 0.1f, 0.9f, 1.0f}, //blue
+    SDL_FColor{0.9f, 0.5f, 0.1f, 1.0f}, //orange
+    SDL_FColor{0.4f, 0.1f, 0.6f, 1.0f}, //purple
+    SDL_FColor{0.0f, 0.9f, 0.0f, 1.0f}, //green
+    SDL_FColor{0.9f, 0.0f, 0.0f, 1.0f}, //red
+    SDL_FColor{0.9f, 0.9f, 0.0f, 1.0f}  //yellow
 };                                          
 
 //operators for SDL classes

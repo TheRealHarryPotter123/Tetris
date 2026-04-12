@@ -10,8 +10,8 @@
 
 class Grid;
 
-Tetromino::Tetromino(TetrominoType type, EColourPalette color, CellCoord center)
-	: type { type }, color{ color }
+Tetromino::Tetromino(TetrominoType type, CellCoord center)
+	: type { type }
 {
 
 	cells[0] = center;
@@ -29,7 +29,7 @@ Tetromino::Tetromino(TetrominoType type, EColourPalette color, CellCoord center)
 		{
 			cells[1] = CellCoord{ center.x, center.y + 1 };
 			cells[2] = CellCoord{ center.x + 1, center.y };
-			cells[3] = CellCoord{ center.x + 1, center.y};
+			cells[3] = CellCoord{ center.x + 2, center.y};
 			break;
 		}
 		case O:
