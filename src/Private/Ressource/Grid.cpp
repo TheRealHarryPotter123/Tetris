@@ -272,27 +272,27 @@ void Grid::DrawDebug()
 	{
 		if (tetromino.IsValid())
 		{
-			std::string colorStr;
+			std::string typeStr;
 			switch (tetromino.GetType())
 			{
-			case I: colorStr = "I";
+			case I: typeStr = "I";
 				break;
-			case J: colorStr = "J";
+			case J: typeStr = "J";
 				break;
-			case L: colorStr = "L";
+			case L: typeStr = "L";
 				break;
-			case T: colorStr = "T";
+			case T: typeStr = "T";
 				break;
-			case S: colorStr = "S";
+			case S: typeStr = "S";
 				break;
-			case Z: colorStr = "Z";
+			case Z: typeStr = "Z";
 				break;
-			case O: colorStr = "O";
+			case O: typeStr = "O";
 				break;
 
-			default: colorStr = "NOT VALID COLOR DEFINED";
+			default: typeStr = "NOT VALID COLOR DEFINED";
 			}
-			ImGui::Text("Tetromino color: %s", colorStr.c_str());
+			ImGui::Text("Tetromino color: %s", typeStr.c_str());
 		}
 		else
 		{
