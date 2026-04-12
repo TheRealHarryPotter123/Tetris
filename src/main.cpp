@@ -158,7 +158,6 @@ int main(int argc, char* argv[])
 	/* MAIN LOOP - END */
 
 #if IS_USING_IMGUI
-		grid.DrawDebug();
 		//Render ImGui windows
 		ImGui::Render();
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);

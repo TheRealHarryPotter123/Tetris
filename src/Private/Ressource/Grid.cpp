@@ -6,6 +6,7 @@
 *		Maxime Sevigny, 27/03/2026: Split display and logic, so it is easier to move blocks without messing with the display
 *		Maxime Sevigny, 01/04/2026: Add color per tetromino
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
+*		Maxime Sevigny, 11/04/2026: Small tweaks to enhance input (add delay when holding left-right)
 */
 #pragma once
 
@@ -48,12 +49,10 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 		{
 		case SDL_SCANCODE_LEFT:
 			// move left
-			handler.moveLeftRequested = true;
 			handler.holdingLeft = true;
 			break;
 		case SDL_SCANCODE_RIGHT:
 			// move right
-			handler.moveRightRequested = true;
 			handler.holdingRight = true;
 			break;
 		case SDL_SCANCODE_LCTRL:
@@ -85,21 +84,15 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 		{
 		case SDL_SCANCODE_LEFT:
 			// move left
-			handler.moveLeftRequested = false;
 			handler.holdingLeft = false;
 			break;
 		case SDL_SCANCODE_RIGHT:
 			// move right
-			handler.moveRightRequested = false;
 			handler.holdingRight = false;
 			break;
 		case SDL_SCANCODE_DOWN:
 			// accelerate
 			handler.accelerateRequested = false;
-			break;
-		case SDL_SCANCODE_UP:
-			// accelerate
-			handler.rotateRightRequested = false;
 			break;
 		}
 	}
@@ -119,16 +112,14 @@ void Grid::Update(float deltaTime)
 		return;
 	}
 
-	//only update if corresponding timers are over
-	if (timeToNextMove <= 0)
-		UpdateMove();
-	else
-		timeToNextMove -= deltaTime;
+	UpdateMove(deltaTime);
+	UpdateFall(deltaTime);
 
-	if (timeToNextFall <= 0)
-		UpdateFall();
-	else
-		timeToNextFall -= deltaTime;
+#if IS_USING_IMGUI
+	DrawDebug();
+#endif
+
+	handler.ResetInstantRequest();
 }
 
 bool Grid::MoveTetromino(movementType move)
@@ -137,7 +128,7 @@ bool Grid::MoveTetromino(movementType move)
 
 	bool isTetrominoStuck = std::visit(combine(
 		[this](Fall)				{ return !tetromino.Fall(this); },
-		[this](Rotation_CW)			{ tetromino.Rotate(ETypeOfTurn::clockwise, this); return false; },
+		[this](Rotation_CW)		{ tetromino.Rotate(ETypeOfTurn::clockwise, this); return false; },
 		[this](Rotation_CounterCW)	{ tetromino.Rotate(ETypeOfTurn::counter_clockwise, this); return false; },
 		[this](Right)				{ tetromino.MoveSideways(ETypeOfSidewayMove::right, this); return false; },
 		[this](Left)				{ tetromino.MoveSideways(ETypeOfSidewayMove::left, this); return false; }
@@ -173,12 +164,29 @@ bool Grid::MoveTetromino(movementType move)
 	return false;
 }
 
-void Grid::UpdateMove()
+void Grid::UpdateMove(float deltaTime)
 {
-	//If both move left and right are requested at the same time, do nothing
-	if (handler.moveLeftRequested != handler.moveRightRequested)
+	//Add delay between sideway moves when holding the buttons
+	if (handler.holdingLeft || handler.holdingRight)
 	{
-		MoveTetromino(handler.moveLeftRequested ? movementType(Left{}) : movementType(Right{}));
+		if (timeToNextMove > 0)
+		{
+			timeToNextMove -= deltaTime;
+		}
+		else
+		{
+			//If both move left and right are requested at the same time, do nothing
+			if (handler.holdingLeft != handler.holdingRight)
+			{
+				MoveTetromino(handler.holdingLeft ? movementType(Left{}) : movementType(Right{}));
+			}
+			
+			timeToNextMove = minTimeBetweenMove;
+		}
+	}
+	else
+	{
+		timeToNextMove = 0;
 	}
 
 	//If both rotation are requested at the same time, do nothing
@@ -186,12 +194,17 @@ void Grid::UpdateMove()
 	{
 		MoveTetromino(handler.rotateLeftRequested ? movementType(Rotation_CounterCW{}) : movementType(Rotation_CW{}));
 	}
-
-	timeToNextMove = minTimeBetweenMove;
 }
 
-void Grid::UpdateFall()
+void Grid::UpdateFall(float deltaTime)
 {
+	//Check if it is time to fall
+	if (timeToNextFall > 0)
+	{
+		timeToNextFall -= deltaTime;
+		return;
+	}
+
 	//If fall failed, check if lines were filled
 	if (MoveTetromino(Fall{}))
 	{
@@ -305,6 +318,7 @@ void Grid::DrawDebug()
 
 
 	ImGui::Text("Time until next fall: %f / %f", timeToNextFall, timeBetweenFalls);
+	ImGui::Text("Time until next move: %f / %f", timeToNextMove, minTimeBetweenMove);
 
 	ImGui::Checkbox("Should tetromino fall?", &ShouldTetrominoFall);
 
@@ -344,9 +358,7 @@ void Grid::DrawDebug()
 
 	if (ImGui::TreeNodeEx("Input", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Move Left\t: %d", handler.moveLeftRequested);
 		ImGui::Text("Holding Left\t: %d", handler.holdingLeft);
-		ImGui::Text("Move Right\t: %d", handler.moveRightRequested);
 		ImGui::Text("Holding Right\t: %d", handler.holdingRight);
 		ImGui::Text("Rotate Right\t: %d", handler.rotateRightRequested);
 		ImGui::Text("Rotate Left\t: %d", handler.rotateLeftRequested);

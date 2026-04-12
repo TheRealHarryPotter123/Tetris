@@ -5,6 +5,7 @@
 *		Maxime Sevigny, 12/03/2026: Added Update() to handle the changes to the grid each frame + some support function to read the grid
 *		Maxime Sevigny, 27/03/2026: Added pre-defined colors and Split display and logic, so it is easier to move blocks without messing with the display
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
+*		Maxime Sevigny, 11/04/2026: Small tweaks to enhance input (add delay when holding left-right)
 */
 #pragma once
 
@@ -48,14 +49,20 @@ private:
 		void draw(SDL_Renderer*);
 	};
 	struct RequestHandler {
-		bool moveLeftRequested = false;
 		bool holdingLeft = false;
-		bool moveRightRequested = false;
 		bool holdingRight = false;
 		bool rotateRightRequested = false;
 		bool rotateLeftRequested = false;
 		bool accelerateRequested = false;
 		bool instadropRequested = false;
+
+		//Reset all request even if they were not realised
+		void ResetInstantRequest()
+		{
+			rotateRightRequested = false;
+			rotateLeftRequested = false;
+			instadropRequested = false;
+		}
 	};
 
 	float x, y;
@@ -89,7 +96,7 @@ private:
 	RequestHandler handler;
 	
 	float timeBetweenFalls = 0.5f;
-	float minTimeBetweenMove = 0.1f;	//Small buffer between registering input
+	float minTimeBetweenMove = 0.16f;	//Small buffer between registering input
 	float timeToNextFall = timeBetweenFalls;
 	float timeToNextMove = 0;
 
@@ -106,8 +113,8 @@ private:
 	ECellState GetCellState(CellCoord coord) const;
 	
 	bool MoveTetromino(movementType move);	//Moves the tetromino according the given type of movement and returns if the tetromino was stopped
-	void UpdateMove();
-	void UpdateFall();
+	void UpdateMove(float deltaTime);
+	void UpdateFall(float deltaTime);
 
 #if IS_USING_IMGUI
 	bool ShouldTetrominoFall = true;
