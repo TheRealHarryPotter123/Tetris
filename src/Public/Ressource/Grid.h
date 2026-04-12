@@ -110,11 +110,13 @@ private:
 	};
 
 	bool IsCellOccupied(CellCoord coord) const;
+	bool IsLineFull(int line) const;
 	ECellState GetCellState(CellCoord coord) const;
 	
 	bool MoveTetromino(movementType move);	//Moves the tetromino according the given type of movement and returns if the tetromino was stopped
 	void UpdateMove(float deltaTime);
 	void UpdateFall(float deltaTime);
+	void ClearLine(int line);
 
 #if IS_USING_IMGUI
 	bool ShouldTetrominoFall = true;

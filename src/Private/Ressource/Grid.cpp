@@ -18,6 +18,15 @@ bool Grid::IsCellOccupied(CellCoord coord) const
 	return cells[coord.x][coord.y].state != empty;
 }
 
+bool Grid::IsLineFull(int line) const
+{
+	for (int i = 0; i != NBR_CELL_VERTICAL; ++i) {
+		if (!IsCellOccupied(CellCoord{ line, i }))
+			return false;
+	}
+	return true;
+}
+
 ECellState Grid::GetCellState(CellCoord coord) const
 {
 	return cells[coord.x][coord.y].state;
@@ -136,12 +145,6 @@ bool Grid::MoveTetromino(movementType move)
 
 	if (isTetrominoStuck)
 	{//If the tetromino is stuck, it can no longer be moved, the tetromino stops moving and becomes a normal StaticBlock
-		for (auto cell : tetromino.GetCells())
-		{
-			GetCell(cell).state = occupied_static_block;
-		}
-
-		tetromino.Reset();
 		return true;
 	}
 
@@ -208,10 +211,40 @@ void Grid::UpdateFall(float deltaTime)
 	//If fall failed, check if lines were filled
 	if (MoveTetromino(Fall{}))
 	{
-		//TODO clear filled lines
+		std::vector<int> linesInvolved;
+		for (auto cell : tetromino.GetCells())
+		{
+			GetCell(cell).state = occupied_static_block;
+			if (std::find(begin(linesInvolved), end(linesInvolved), cell.x) == end(linesInvolved))
+				linesInvolved.push_back(cell.x);
+		}
+
+		std::vector<int> linesToClear;
+		for (auto line : linesInvolved) {
+			if (IsLineFull(line))
+				linesToClear.push_back(line);
+		}
+
+		for (auto line : linesToClear)
+			ClearLine(line);
+
+		tetromino.Reset();
 	}
 
 	timeToNextFall = timeBetweenFalls;
+}
+
+void Grid::ClearLine(int line)
+{
+	// on efface les blocs de la ligne
+	for (size_t i = 0; i != NBR_CELL_VERTICAL; ++i) {
+		cells[line][i].state = empty;
+		cells[line][i].lastTetrominoType = INVALID_TETROMINO;
+	}
+
+	for (size_t i = line; i != 1; --i) {
+		std::swap(cells[i], cells[i - 1]);
+	}
 }
 
 void Grid::AddTetromino()
