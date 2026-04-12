@@ -5,6 +5,7 @@
 *		Maxime Sevigny, 12/03/2026: First messy pass for base tetromino physic - tetromino are generated, fall and land (only on bottom of grid)
 *		Maxime Sevigny, 27/03/2026: Split display and logic, so it is easier to move blocks without messing with the display
 *		Maxime Sevigny, 01/04/2026: Add color per tetromino
+*		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 */
 #pragma once
 
