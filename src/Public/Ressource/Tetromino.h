@@ -4,6 +4,7 @@
 *		Maxime Sevigny, 12/03/2026 : Redefinition of Tetromino to hold the cells that it fills (no drawing logic)
 *		Maxime Sevigny, 27/03/2026 : Restructuring tetromino into Struct, so movements can be done into Grid (it will be easier to check the next valid position)
 *		Maxime Sevigny, 01/04/2026: Add color per tetromino
+*		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 */
 
 #pragma once
@@ -17,7 +18,8 @@ constexpr int NBR_CELLS_PER_TETROMINO = 4;
 //All tetromino types that can be used
 enum TetrominoType : std::uint8_t { I, J, L, T, S, Z, O, INVALID_TETROMINO };
 
-enum ETypeOfTurn : std::uint8_t { clockwise, counter_clockwise };
+enum ETypeOfTurn : std::int8_t { counter_clockwise = -1, clockwise = 1};
+enum ETypeOfSidewayMove : std::int8_t { left = -1, right = 1};
 
 class Tetromino {
 
@@ -25,8 +27,8 @@ class Tetromino {
 	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
 	
 	TetrominoType type = INVALID_TETROMINO;
-
 	EColourPalette color = COUNT;
+
 
 public:
 	Tetromino() = default;
@@ -39,8 +41,14 @@ public:
 	
 	bool IsValid() const { return type != INVALID_TETROMINO; }
 	
-	bool Rotate(ETypeOfTurn turn, const Grid* grid);//Try to rotate the tetromino, if the Rotate fails, return false
-	bool Fall(int nbrCells, const Grid* grid);		//Try to make the tetromino fall by x cells, return false if it fails
+	//Try to rotate the tetromino, if the Rotate fails, return false
+	bool Rotate(ETypeOfTurn turn, const Grid* grid);
+
+	//Try to make the tetromino fall by x cells, return false if it fails
+	bool Fall(const Grid* grid);
+
+	//Try to make the tetromino fall by x cells, return false if it fails
+	bool MoveSideways(ETypeOfSidewayMove dir, const Grid* grid);
 
 	inline void Reset() { *this = Tetromino();}
 };
