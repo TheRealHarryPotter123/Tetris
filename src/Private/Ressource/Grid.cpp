@@ -350,20 +350,6 @@ void Grid::DrawDebug()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNodeEx("Input", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Text("Move Left\t: %d", handler.moveLeftRequested);
-		ImGui::Text("Holding Left\t: %d", handler.holdingLeft);
-		ImGui::Text("Move Right\t: %d", handler.moveRightRequested);
-		ImGui::Text("Holding Right\t: %d", handler.holdingRight);
-		ImGui::Text("Rotate Right\t: %d", handler.rotateRightRequested);
-		ImGui::Text("Rotate Left\t: %d", handler.rotateLeftRequested);
-		ImGui::Text("Accelerate\t: %d", handler.accelerateRequested);
-		ImGui::Text("Instant Drop\t: %d", handler.instadropRequested);
-
-		ImGui::TreePop();
-	}
-
 	ImGui::End();
 }
 #endif // IS_USING_IMGUI
