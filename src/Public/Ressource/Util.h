@@ -11,7 +11,7 @@
 
 #pragma once
 
-#define IS_USING_IMGUI true 		//Allows to turn off all ImGui, since it will not be used in the final version
+#define IS_USING_IMGUI false 		//Allows to turn off all ImGui, since it will not be used in the final version
 #define IS_TESTING false            //Allows to turn on testing
 #define IS_TRACKING false            //Allows to turn on tracking of performance data in text files
 #define TYPE_OF_TEST 0              //Specify which test is used, 0 = full grid, 1 = etc...
@@ -26,6 +26,8 @@
 //The dimensions of the grid
 constexpr size_t NBR_CELL_HORIZONTAL = 20;
 constexpr size_t NBR_CELL_VERTICAL = 10;
+constexpr size_t NBR_TEST_ROTATION = 5;
+constexpr size_t DIFFERENT_ROTATION_STATES = 8;
 
 //This struct represent a coord in the grid
 struct CellCoord 
@@ -68,6 +70,9 @@ struct CellCoord
         y -= other.y;
         return *this;
     }
+    CellCoord operator+(const CellCoord& other) const {
+        return CellCoord{ this->x + other.x, this->y + other.y };
+    }
     CellCoord operator-(const CellCoord& other) const
     {
         return CellCoord{this->x - other.x, this->y - other.y };
@@ -87,7 +92,29 @@ static constexpr SDL_FColor ColorPalettes[TetrominoType::INVALID_TETROMINO]
     SDL_FColor{0.0f, 0.9f, 0.0f, 1.0f}, //green
     SDL_FColor{0.9f, 0.0f, 0.0f, 1.0f}, //red
     SDL_FColor{0.9f, 0.9f, 0.0f, 1.0f}  //yellow
-};                                          
+};
+
+static CellCoord kickBackLogicTable[DIFFERENT_ROTATION_STATES][NBR_TEST_ROTATION] = {
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{-1, -1}, CellCoord{0,  2}, CellCoord{-1,  2},}, //0->R
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{ 1,  1}, CellCoord{0, -2}, CellCoord{ 1, -2},}, //R->0
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{ 1,  1}, CellCoord{0, -2}, CellCoord{ 1, -2},}, //R->2
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{-1, -1}, CellCoord{0,  2}, CellCoord{-1,  2},}, //2->R
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{ 1, -1}, CellCoord{0,  2}, CellCoord{ 1,  2},}, //2->L
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{-1,  1}, CellCoord{0, -2}, CellCoord{-1, -2},}, //L->2
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{-1,  1}, CellCoord{0, -2}, CellCoord{-1, -2},}, //L->0
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{ 1, -1}, CellCoord{0,  2}, CellCoord{ 1,  2},}  //0->L
+};
+
+static CellCoord kickBackLogicTableLTetromino[DIFFERENT_ROTATION_STATES][NBR_TEST_ROTATION] = {
+    { CellCoord{0, 0}, CellCoord{-2, 0}, CellCoord{ 1,  0}, CellCoord{-2,  1}, CellCoord{ 1, -2},}, //0->R
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{ 2,  0}, CellCoord{-1, -2}, CellCoord{ 2,  1},}, //R->2
+    { CellCoord{0, 0}, CellCoord{ 2, 0}, CellCoord{-1,  0}, CellCoord{ 2, -1}, CellCoord{-1,  2},}, //2->L
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{-2,  0}, CellCoord{ 1,  2}, CellCoord{-2, -1},}, //L->0
+    { CellCoord{0, 0}, CellCoord{ 2, 0}, CellCoord{-1,  0}, CellCoord{ 2, -1}, CellCoord{-1,  2},}, //R->0
+    { CellCoord{0, 0}, CellCoord{ 1, 0}, CellCoord{-2,  0}, CellCoord{ 1,  2}, CellCoord{-2, -1},}, //2->R
+    { CellCoord{0, 0}, CellCoord{-2, 0}, CellCoord{ 1,  0}, CellCoord{-2,  1}, CellCoord{ 1, -2},}, //L->2
+    { CellCoord{0, 0}, CellCoord{-1, 0}, CellCoord{ 2,  0}, CellCoord{-1, -2}, CellCoord{ 2,  1},}  //0->L
+};
 
 //operators for SDL classes
 inline SDL_FPoint operator+(SDL_FPoint p1, SDL_FPoint p2)

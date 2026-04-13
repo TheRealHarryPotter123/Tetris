@@ -24,6 +24,7 @@ class Tetromino {
 	std::vector<CellCoord> cells = std::vector<CellCoord>(NBR_CELLS_PER_TETROMINO);
 	
 	TetrominoType type = INVALID_TETROMINO;
+	uint8_t rotationState = 0;
 
 
 public:

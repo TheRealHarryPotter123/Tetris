@@ -14,57 +14,62 @@ Tetromino::Tetromino(TetrominoType type, CellCoord center)
 	: type { type }
 {
 
-	cells[0] = center;
-
 	switch (type) {
 		using enum TetrominoType;
 		case I:
 		{
-			cells[1] = CellCoord{ center.x, center.y + 1 };
-			cells[2] = CellCoord{ center.x, center.y + 2 };
-			cells[3] = CellCoord{ center.x, center.y + 3 };
+			cells[0] = CellCoord{ center.x + 1, center.y };
+			cells[1] = CellCoord{ center.x + 1, center.y - 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y + 1 };
+			cells[3] = CellCoord{ center.x + 1, center.y + 2 };
 			break;
 		}
 		case J:
 		{
+			cells[0] = CellCoord{ center.x + 1, center.y };
 			cells[1] = CellCoord{ center.x, center.y + 1 };
-			cells[2] = CellCoord{ center.x + 1, center.y };
-			cells[3] = CellCoord{ center.x + 2, center.y};
-			break;
-		}
-		case O:
-		{
-			cells[1] = CellCoord{center.x + 1, center.y + 0 };
-			cells[2] = CellCoord{center.x, center.y + 1 };
-			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y + 1 };
+			cells[3] = CellCoord{ center.x + 1, center.y - 1};
 			break;
 		}
 		case L: 
 		{
-			cells[1] = CellCoord{ center.x - 1, center.y};
-			cells[2] = CellCoord{ center.x + 1, center.y };
-			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
-			break;
-		}
-		case S: 
-		{
-			cells[1] = CellCoord{ center.x - 1, center.y};
-			cells[2] = CellCoord{ center.x, center.y + 1 };
+			cells[0] = CellCoord{ center.x + 1, center.y };
+			cells[1] = CellCoord{ center.x, center.y - 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y - 1 };
 			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
 			break;
 		}
 		case T: 
 		{
-			cells[1] = CellCoord{ center.x + 1, center.y + 0 };
-			cells[2] = CellCoord{ center.x, center.y + 1 };
-			cells[3] = CellCoord{ center.x - 1, center.y};
+			cells[0] = center;
+			cells[1] = CellCoord{ center.x + 1, center.y - 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1};
+			break;
+		}
+		case S: 
+		{
+			cells[0] = CellCoord{center.x + 1, center.y};
+			cells[1] = center;
+			cells[2] = CellCoord{ center.x, center.y + 1};
+			cells[3] = CellCoord{ center.x + 1, center.y - 1 };
 			break;
 		}
 		case Z: 
 		{
-			cells[1] = CellCoord{ center.x - 1, center.y + +1 };
-			cells[2] = CellCoord{ center.x, center.y + 1 };
-			cells[3] = CellCoord{ center.x + 1, center.y};
+			cells[0] = center;
+			cells[1] = CellCoord{ center.x, center.y - 1 };
+			cells[2] = CellCoord{ center.x + 1, center.y };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1};
+			break;
+		}
+		case O:
+		{
+			cells[0] = CellCoord{center.x, center.y + 1 };
+			cells[1] = center;
+			cells[2] = CellCoord{center.x + 1, center.y };
+			cells[3] = CellCoord{ center.x + 1, center.y + 1 };
 			break;
 		}
 		
@@ -84,34 +89,63 @@ bool Tetromino::Rotate(ETypeOfTurn turn, const Grid* grid)
 {
 	if (type == TetrominoType::O)
 		return true;
+	
+	//we change the coordinates for each rotation test
+	std::vector<CellCoord> testTable;
+	if (type == TetrominoType::I)
+		testTable = std::vector<CellCoord>(std::begin(kickBackLogicTableLTetromino[4 * static_cast<int>(turn == counter_clockwise) + rotationState]),
+										   std::end(kickBackLogicTableLTetromino[4 * static_cast<int>(turn == counter_clockwise) + rotationState]));
+	else
+		testTable = std::vector<CellCoord>(std::begin(kickBackLogicTable[4 * static_cast<int>(turn == counter_clockwise) + rotationState]),
+                                           std::end(kickBackLogicTable[4 * static_cast<int>(turn == counter_clockwise) + rotationState]));
 
+	bool rotationWorked = false;
 	//First check if rotation is possible
-	std::vector<CellCoord> newCells {GetCells()};
+	std::vector<CellCoord> rotatedCells{ GetCells() };
 
 	//Tetromino are created with the middle point in cells[0], so it does not move
 	const CellCoord& center = cells[0];
-	newCells[0] = cells[0];
-
-	for (size_t i = 1; i < NBR_CELLS_PER_TETROMINO; i++)
+	rotatedCells[0] = cells[0];
+	for (size_t i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
 	{
 		//Set CellCoord so it is local to center of tetromino
-		newCells[i] = center - newCells[i];
-		std::swap(newCells[i].x, newCells[i].y);
-		newCells[i].x = -newCells[i].x;
-		newCells[i] *= turn;
+		rotatedCells[i] = center - rotatedCells[i];
+		std::swap(rotatedCells[i].x, rotatedCells[i].y);
+		rotatedCells[i].x = -rotatedCells[i].x;
+		rotatedCells[i] *= turn;
 
 		//Set CellCord to be in the Grid's space
-		newCells[i] += center;
+		rotatedCells[i] += center;
+	}
+	
+	std::vector<CellCoord> newCells; 
+	newCells.resize(4);
+	for (size_t k = 0; k != NBR_TEST_ROTATION; ++k) {
+		rotationWorked = true;
+		for (size_t i = 0; i != NBR_CELLS_PER_TETROMINO; ++i)
+		{
+			newCells[i] = rotatedCells[i] + testTable[k];
 
-		if (!Grid::IsCellValid(newCells[i]))
-			return false;
+			if (!Grid::IsCellValid(newCells[i]))
+				rotationWorked = false;
 
-		if (grid->GetCellState(newCells[i]) == ECellState::occupied_static_block)
-			return false;
+			if (grid->GetCellState(newCells[i]) == ECellState::occupied_static_block)
+				rotationWorked = false;
+		}
+		if (rotationWorked == true)
+			break;
 	}
 
-	cells = std::move(newCells);
-	return true;
+	if (rotationWorked) {
+		cells = std::move(newCells);
+		rotationState = rotationState + static_cast<int>(turn);
+		if (rotationState == -1)
+			rotationState = 3;
+		rotationState = rotationState % 4;
+		return true;
+	}
+	else
+		return false;
 }
 
 bool Tetromino::Fall(const Grid* grid)
