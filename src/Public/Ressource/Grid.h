@@ -65,6 +65,8 @@ private:
 		}
 	};
 
+	
+
 	float x, y;
 	float blockSize;
 	Rectangle rectsHorizontaux[NBR_CELL_HORIZONTAL + 1];
@@ -99,6 +101,7 @@ private:
 	float minTimeBetweenMove = 0.16f;	//Small buffer between registering input
 	float timeToNextFall = timeBetweenFalls;
 	float timeToNextMove = 0;
+	bool isAccelerated = false;
 
 	Cell& GetCell(CellCoord coord) { return cells[coord.x][coord.y]; }
 	const Cell& GetCell(CellCoord coord) const { return cells[coord.x][coord.y]; }
@@ -118,16 +121,14 @@ private:
 	void UpdateFall(float deltaTime);
 	void ClearLine(int line);
 
-#if IS_USING_IMGUI
 	bool ShouldTetrominoFall = true;
-#endif
 
 public:
 	Grid(float = 0, float = 0, float = 0);
 	
 	void handleInput(SDL_KeyboardEvent);
 	void Update(float deltaTime);
-	void AddTetromino();
+	bool AddTetromino();
 
 
 	friend bool Tetromino::Fall(const Grid*);

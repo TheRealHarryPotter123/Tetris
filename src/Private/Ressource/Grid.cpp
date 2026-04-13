@@ -109,14 +109,13 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 
 void Grid::Update(float deltaTime)
 {
-#if IS_USING_IMGUI
 	if (!ShouldTetrominoFall)
 		return; //do nothing
-#endif
 
 	if (!tetromino.IsValid())
 	{
-		AddTetromino();
+		if (!AddTetromino())
+			ShouldTetrominoFall = false;
 		timeToNextFall = timeBetweenFalls;
 		return;
 	}
@@ -169,8 +168,24 @@ bool Grid::MoveTetromino(movementType move)
 
 void Grid::UpdateMove(float deltaTime)
 {
+	if(handler.instadropRequested) {
+		while (!MoveTetromino(movementType(Fall{})));
+		UpdateFall(timeToNextFall);
+		handler.ResetInstantRequest();
+		return;
+	}
+
+	if (handler.accelerateRequested && !isAccelerated) {
+		isAccelerated = true;
+		timeBetweenFalls /= 2;
+	}
+	else if (!handler.accelerateRequested && isAccelerated) {
+		isAccelerated = false;
+		timeBetweenFalls *= 2;
+	}
+
 	//Add delay between sideway moves when holding the buttons
-	if (handler.holdingLeft || handler.holdingRight)
+	if(handler.holdingLeft || handler.holdingRight)
 	{
 		if (timeToNextMove > 0)
 		{
@@ -224,8 +239,9 @@ void Grid::UpdateFall(float deltaTime)
 			if (IsLineFull(line))
 				linesToClear.push_back(line);
 		}
-
-		for (auto line : linesToClear)
+		
+		std::sort(std::begin(linesToClear), std::end(linesToClear));
+  		for (auto line : linesToClear)
 			ClearLine(line);
 
 		tetromino.Reset();
@@ -247,7 +263,7 @@ void Grid::ClearLine(int line)
 	}
 }
 
-void Grid::AddTetromino()
+bool Grid::AddTetromino()
 {
 	if (currentBagIndex == 0) {
 		std::shuffle(std::begin(randomTetrominoBag), std::end(randomTetrominoBag), prng);
@@ -259,9 +275,17 @@ void Grid::AddTetromino()
 
 	for (CellCoord cell : tetromino.GetCells())
 	{
+		if (!IsCellValid(cell))
+			return false;
+		if (GetCellState(cell) == ECellState::occupied_static_block)
+			return false;
+
 		GetCell(cell).state = occupied_tetromino;
 		GetCell(cell).lastTetrominoType = tetromino.GetType();
+
 	}
+
+	return true;
 }
 	
 void Grid::draw(SDL_Renderer* renderer) {
