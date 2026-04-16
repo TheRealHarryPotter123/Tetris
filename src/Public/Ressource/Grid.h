@@ -120,6 +120,7 @@ private:
 	void UpdateMove(float deltaTime);
 	void UpdateFall(float deltaTime);
 	void ClearLine(int line);
+	void ClearGrid();
 
 	bool ShouldTetrominoFall = true;
 

@@ -85,6 +85,9 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 			if (!event.repeat)
 				handler.instadropRequested = true;
 			break;
+		case SDL_SCANCODE_R:
+			if (!ShouldTetrominoFall)
+				ClearGrid();
 		}
 	}
 	else
@@ -177,6 +180,7 @@ void Grid::UpdateMove(float deltaTime)
 
 	if (handler.accelerateRequested && !isAccelerated) {
 		isAccelerated = true;
+		timeToNextFall /= 2;
 		timeBetweenFalls /= 2;
 	}
 	else if (!handler.accelerateRequested && isAccelerated) {
@@ -261,6 +265,11 @@ void Grid::ClearLine(int line)
 	for (size_t i = line; i != 1; --i) {
 		std::swap(cells[i], cells[i - 1]);
 	}
+}
+
+void Grid::ClearGrid()
+{
+	*this = Grid{ x, y, blockSize };
 }
 
 bool Grid::AddTetromino()
