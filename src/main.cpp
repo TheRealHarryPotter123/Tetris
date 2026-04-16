@@ -61,13 +61,7 @@ int main(int argc, char* argv[])
 	if constexpr (TYPE_OF_TEST == 0)
 	{
 		//ajout de bloc statiques pour tester l'affichage des blocs dans la grille
-		for (size_t i = 0; i != 20; ++i)
-		{
-			for (size_t j = 0; j != 10; ++j)
-			{
-				grid.ActivateBlock(CellCoord(i,j), true);
-			}
-		}
+		grid.FillGrid();
 	}
 	else
 	{

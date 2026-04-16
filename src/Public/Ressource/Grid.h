@@ -137,6 +137,10 @@ public:
 	friend bool Tetromino::Rotate(ETypeOfTurn, const Grid*);
 	friend bool Tetromino::MoveSideways(ETypeOfSidewayMove, const Grid*);
 
+#if IS_TESTING
+	void FillGrid();
+#endif
+
 #if IS_USING_IMGUI
 	void DrawDebug();
 #endif

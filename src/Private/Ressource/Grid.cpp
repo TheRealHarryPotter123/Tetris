@@ -116,6 +116,9 @@ void Grid::handleInput(SDL_KeyboardEvent event)
 
 void Grid::Update(float deltaTime)
 {
+#if IS_TESTING
+	return;
+#endif // IS_TESTING
 	if (!ShouldTetrominoFall)
 		return; //do nothing
 
@@ -344,6 +347,28 @@ Grid::Rectangle& Grid::Rectangle::operator=(const Rectangle& other)
 void Grid::Rectangle::draw(SDL_Renderer* renderer) {
 	SDL_RenderGeometry(renderer, NULL, points, 4, indices, 6);
 }
+
+#if IS_TESTING
+void Grid::FillGrid()
+{
+	float colorNum;
+	SDL_FColor color;
+	for (size_t i = 0; i != NBR_CELL_HORIZONTAL; ++i)
+	{
+		for (size_t j = 0; j != NBR_CELL_VERTICAL; ++j)
+		{
+			colorNum = static_cast<float>(i + j) / 255.0f;
+			color = SDL_FColor{ static_cast<float>(colorNum * i + 0.2),
+							   static_cast<float>(colorNum * j + 0.2),
+							   static_cast<float>(colorNum * (i + j) + 0.2),
+							   1.0f };
+			blocks[i][j] = StaticBlock{ getCoord(i, j), blockSize, color };
+			cells[i][j].state = occupied_static_block;
+			cells[i][j].lastTetrominoType = TetrominoType::INVALID_TETROMINO;
+		}
+	}
+}
+#endif
 
 #if IS_USING_IMGUI
 void Grid::DrawDebug()
