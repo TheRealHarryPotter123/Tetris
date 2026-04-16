@@ -6,6 +6,7 @@
 *		Maxime Sevigny, 27/03/2026: Added pre-defined colors and Split display and logic, so it is easier to move blocks without messing with the display
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 *		Maxime Sevigny, 11/04/2026: Small tweaks to enhance input (add delay when holding left-right)
+*       Thomas Lesieur, 11/04/2026: Ajout de la prise en main de requêtes au clavier
 */
 #pragma once
 

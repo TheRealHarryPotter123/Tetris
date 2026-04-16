@@ -7,6 +7,10 @@
 *		Maxime Sevigny, 01/04/2026: Add color per tetromino
 *		Maxime Sevigny, 11/04/2026: Add collision handling + basic move and rotation
 *		Maxime Sevigny, 11/04/2026: Small tweaks to enhance input (add delay when holding left-right)
+*       Thomas Lesieur, 11/04/2026: Ajout de la prise en main de requêtes au clavier
+*       Thomas Lesieur, 12/04/2026: Ajout de la mécanique de spawn de blocs aléatoires
+*       Thomas Lesieur, 12/04/2026: Ajout de la supression d'une ligne lorsqu'elle est remplie
+*		Thomas Lesieur, 12/04/2026: Ajout de la rotation des blocs avec les rebondissements
 */
 #pragma once
 
