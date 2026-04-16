@@ -102,10 +102,10 @@ int main(int argc, char* argv[])
 		auto elapsed_Time = post_time - pre_time;
 		auto elapsed_milli = (float)std::chrono::duration<double, std::milli>(elapsed_Time).count();
 		auto elapsed_second = (float)std::chrono::duration<double, std::ratio<1, 1>>(elapsed_Time).count();
-
-
+#if IS_USING_IMGUI
+		std::cout << elapsed_milli << " ms elaped, " << 1.0 / elapsed_second << " fps" << std::endl;
+#endif // IS_USING_IMGUI
 #if IS_TRACKING
-		std::cout << elapsed_milli << " ms elasped, " << 1.0 / elapsed_second << " fps" << std::endl;
 		++frameCount;
 		auto elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
 		if (elapsed_time >= std::chrono::seconds(secondCount)) {
